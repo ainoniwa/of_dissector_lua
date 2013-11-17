@@ -23,7 +23,7 @@ match_oxm_F     = ProtoField.uint16("of13.match_oxm",     "OXM")
 match_padding_F = ProtoField.string("of13.match_padding", "Padding")
 
 -- A.2.3.2 Flow Match Fileld Structure
-oxm_F         = ProtoField.string("of13.oxm",        "Flow Match Fileld Structure")
+oxm_F         = ProtoField.string("of13.oxm",        "Flow Match Fileld")
 oxm_class_F   = ProtoField.uint16("of13.oxm_class",  "Match class: member class ie reserved class", base.HEX)
 oxm_field_F   = ProtoField.uint8("of13.oxm_field",   "Match field within the class", base.HEX, nil, 0xfe)
 oxm_hasmask_F = ProtoField.uint8("of13.oxm_hasmask", "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
@@ -31,12 +31,21 @@ oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
 -- TODO: XXX
 oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
 
+-- A.2.4 Flow Instruction Structures
+ofp_instruction_F               = ProtoField.string("of13.instruction", "Flow Instruction")
+ofp_instruction_type_F          = ProtoField.string("of13.instruction_type", "Type")
+ofp_instruction_length_F        = ProtoField.string("of13.instruction_length", "Length")
+ofp_instruction_table_id_F      = ProtoField.string("of13.instruction_table_id", "Table ID")
+ofp_instruction_padding_F       = ProtoField.string("of13.instruction_padding", "Padding")
+ofp_instruction_metadata_F      = ProtoField.string("of13.instruction_metadata", "Metadata")
+ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_mask", "Metadata mask")
+ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter", "Meter")
+
 -- A.2.5 Action Structures
-ofp_action_header_F        = ProtoField.string("of13.action",          "Action Structures")
+ofp_action_header_F        = ProtoField.string("of13.action",          "Action")
 ofp_action_header_type_F   = ProtoField.uint16("of13.action_type",     "One of OFPAT_*")
 ofp_action_header_length_F = ProtoField.uint16("of13.action_length",   "Length of action, including this header")
-
-ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port", base.HEX)
+ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port")
 ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
 ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
 
@@ -57,6 +66,27 @@ ofp_switch_features_capabilities_group_stats_F   = ProtoField.uint32("of13.featu
 ofp_switch_features_capabilities_ip_reasm_F      = ProtoField.uint32("of13.feature_cap_ip_reasm",     "Can reassemble IP fragments", base.HEX, VALS_BOOL, 0x00000020)
 ofp_switch_features_capabilities_queue_stats_F   = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
 ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
+
+-- A.3.4.1 Modify Flow Entry Message
+ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
+ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
+ofp_flow_mod_cookie_mask_F  = ProtoField.uint64("of13.flowmod_cookie_mask",  "Cookie mask", base.HEX)
+ofp_flow_mod_table_id_F     = ProtoField.uint8 ("of13.flowmod_table_id",     "Table ID")
+ofp_flow_mod_command_F      = ProtoField.uint8 ("of13.flowmod_command",      "Command")
+ofp_flow_mod_idle_timeout_F = ProtoField.uint16("of13.flowmod_idle_timeout", "Idle timeout")
+ofp_flow_mod_hard_timeout_F = ProtoField.uint16("of13.flowmod_hard_timeout", "Hard timeout")
+ofp_flow_mod_priority_F     = ProtoField.uint16("of13.flowmod_priority",     "Priority")
+ofp_flow_mod_buffer_id_F    = ProtoField.uint32("of13.flowmod_buffer_id",    "Buffer ID")
+ofp_flow_mod_out_port_F     = ProtoField.uint32("of13.flowmod_out_port",     "Out port")
+ofp_flow_mod_out_group_F    = ProtoField.uint32("of13.flowmod_out_group",    "Out group")
+ofp_flow_mod_flags_F        = ProtoField.uint16("of13.flowmod_flags",        "Flags", base.HEX)
+ofp_flow_mod_padding_F      = ProtoField.string("of13.flowmod_padding",      "Padding")
+
+ofp_flow_mod_flags_send_flow_rem_F = ProtoField.uint16("of13.mod_flag_flow_rem", "Flow removed", base.HEX, VALS_BOOL, 0x0001)
+ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_overlap", "Check overlap", base.HEX, VALS_BOOL, 0x0002)
+ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count", "Reset count", base.HEX, VALS_BOOL, 0x0004)
+ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count", "No packet count", base.HEX, VALS_BOOL, 0x0008)
+ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count", "No byte count", base.HEX, VALS_BOOL, 0x0010)
 
 -- A.3.7 Packet-Out Message
 packet_out_F            = ProtoField.string("of13.packet_out",            "Packet-Out Message")
@@ -98,6 +128,16 @@ of13_proto.fields = {
     oxm_length_F,
     oxm_value_F,
 
+    -- A.2.4 Flow Instruction Structures
+    ofp_instruction_F,
+    ofp_instruction_type_F,
+    ofp_instruction_length_F,
+    ofp_instruction_table_id_F,
+    ofp_instruction_padding_F,
+    ofp_instruction_metadata_F,
+    ofp_instruction_metadata_mask_F,
+    ofp_instruction_meter_F,
+
     -- A.2.5 Action Structures
     ofp_action_header_F,
     ofp_action_header_type_F,
@@ -123,6 +163,27 @@ of13_proto.fields = {
     ofp_switch_features_capabilities_ip_reasm_F,
     ofp_switch_features_capabilities_queue_stats_F,
     ofp_switch_features_capabilities_port_blocked_F,
+
+    -- A.3.4.1 Modify Flow Entry Message
+    ofp_flow_mod_F,
+    ofp_flow_mod_cookie_F,
+    ofp_flow_mod_cookie_mask_F,
+    ofp_flow_mod_table_id_F,
+    ofp_flow_mod_command_F,
+    ofp_flow_mod_idle_timeout_F,
+    ofp_flow_mod_hard_timeout_F,
+    ofp_flow_mod_priority_F,
+    ofp_flow_mod_buffer_id_F,
+    ofp_flow_mod_out_port_F,
+    ofp_flow_mod_out_group_F,
+    ofp_flow_mod_flags_F,
+    ofp_flow_mod_padding_F,
+
+    ofp_flow_mod_flags_send_flow_rem_F,
+    ofp_flow_mod_flags_check_overlap_F,
+    ofp_flow_mod_flags_reset_counts_F,
+    ofp_flow_mod_flags_no_pkt_counts_F,
+    ofp_flow_mod_flags_no_byt_counts_F,
 
     -- A.3.7 Packet-Out Message
     packet_out_F,
@@ -246,6 +307,17 @@ ofp_match_type_string = {
     [1] = "OFPMT_OXM",
 }
 
+-- A.2.4 Flow Instruction Structures
+ofp_instruction_type = {
+    [1] = "OFPIT_GOTO_TABLE",        -- Setup the next table in the lookup pipeline
+    [2] = "OFPIT_WRITE_METADATA",    -- Setup the metadata field for use later in pipeline
+    [3] = "OFPIT_WRITE_ACTIONS",     -- Write the action(s) onto the datapath action set
+    [4] = "OFPIT_APPLY_ACTIONS",     -- Applies the action(s) immediately
+    [5] = "OFPIT_CLEAR_ACTIONS",     -- Clears all actions from the datapath action set
+    [6] = "OFPIT_METER",             -- Apply meter (rate limiter)
+    [0xffff] = "OFPIT_EXPERIMENTER", -- Experimenter instruction
+}
+
 -- A.2.5 Action Structure
 ofp_action_type = {
     [0]      = "OFPAT_OUTPUT",       -- Output to switch port.
@@ -271,6 +343,16 @@ ofp_controller_max_len = {
     [0xffe5] = "OFPCML_MAX",       -- maximum max_len value which can be used to request a specific byte length.
     [0xffff] = "OFPCML_NO_BUFFER", -- indicates that no buffering should be applied and the whole packet is to be sent to the controller.
 }
+
+-- A.3.4.1 Modify Flow Entry Message
+ofp_flow_mod_command = {
+    [0] = "OFPFC_ADD",           -- New flow.
+    [1] = "OFPFC_MODIFY",        -- Modify all matching flows.
+    [2] = "OFPFC_MODIFY_STRICT", -- Modify entry strictly matching wildcards and priority.
+    [3] = "OFPFC_DELETE",        -- Delete all matching flows.
+    [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
+}
+
 
 -- A.3.9 Role Request Message
 ofp_controller_role = {
@@ -411,7 +493,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[_type] == "OFPT_PACKET_OUT" then
             ofp_packet_out(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_FLOW_MOD" then
-            return
+            ofp_flow_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_GROUP_MOD" then
             return
         elseif ofp_type[_type] == "OFPT_PORT_MOD" then
@@ -580,6 +662,137 @@ function ofp_action_output(buffer, pinfo, tree)
     return pointer
 end
 
+function ofp_flow_mod(buffer, pinfo, tree)
+    local _cookie_range       = buffer(0,8)
+    local _cookie_mask_range  = buffer(8,8)
+    local _table_id_range     = buffer(16,1)
+    local _command_range      = buffer(17,1)
+    local _idle_timeout_range = buffer(18,2)
+    local _hard_timeout_range = buffer(20,2)
+    local _priority_range     = buffer(22,2)
+    local _buffer_id_range    = buffer(24,4)
+    local _out_port_range     = buffer(28,4)
+    local _out_group_range    = buffer(32,4)
+    local _flags_range        = buffer(36,2)
+    local _padding_range      = buffer(38,2)
+    local pointer = 40
+
+    local _cookie       = _cookie_range:uint64()
+    local _cookie_mask  = _cookie_mask_range:uint64()
+    local _table_id     = _table_id_range:uint()
+    local _command      = _command_range:uint()
+    local _idle_timeout = _idle_timeout_range:uint()
+    local _hard_timeout = _hard_timeout_range:uint()
+    local _priority     = _priority_range:uint()
+    local _buffer_id    = _buffer_id_range:uint()
+    local _out_port     = _out_port_range:uint()
+    local _out_group    = _out_group_range:uint()
+    local _flags        = _flags_range:uint()
+    local _padding      = tostring(_padding_range)
+
+    local subtree = tree:add(ofp_flow_mod_F, buffer(), "")
+    subtree:add(ofp_flow_mod_cookie_F      , _cookie_range      , _cookie      )
+    subtree:add(ofp_flow_mod_cookie_mask_F , _cookie_mask_range , _cookie_mask )
+    subtree:add(ofp_flow_mod_table_id_F    , _table_id_range    , _table_id    )
+    subtree:add(ofp_flow_mod_command_F     , _command_range     , _command     ):append_text(" (" .. ofp_flow_mod_command[_command] .. ")")
+    subtree:add(ofp_flow_mod_idle_timeout_F, _idle_timeout_range, _idle_timeout)
+    subtree:add(ofp_flow_mod_hard_timeout_F, _hard_timeout_range, _hard_timeout)
+    subtree:add(ofp_flow_mod_priority_F    , _priority_range    , _priority    )
+    subtree:add(ofp_flow_mod_buffer_id_F   , _buffer_id_range   , _buffer_id   )
+    subtree:add(ofp_flow_mod_out_port_F    , _out_port_range    , _out_port    )
+    subtree:add(ofp_flow_mod_out_group_F   , _out_group_range   , _out_group   )
+    flags_tree = subtree:add(ofp_flow_mod_flags_F       , _flags_range       , _flags       )
+    flags_tree:add(ofp_flow_mod_flags_send_flow_rem_F,   _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_check_overlap_F,   _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_reset_counts_F ,   _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_no_pkt_counts_F,   _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_no_byt_counts_F,   _flags_range, _flags)
+    subtree:add(ofp_flow_mod_padding_F     , _padding_range     , _padding     )
+
+    -- Flow Match Header dissector
+    offset = ofp_match(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+    pointer = pointer + offset
+
+    -- Flow Instruction Structures
+    if buffer:len() <= pointer then
+        return
+    end
+    ofp_instruction(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+end
+
+function ofp_instruction(buffer, pinfo, tree)
+    if buffer:len() < 4 then
+        return
+    end
+
+    local _type_range   = buffer(0,2)
+    local _length_range = buffer(2,2)
+    local pointer = 4
+
+    local _type   = _type_range:uint()
+    local _length = _length_range:uint()
+
+    local subtree = tree:add(ofp_instruction_F, buffer(0,_length), "Flow Instruction")
+    subtree:add(ofp_instruction_type_F,   _type_range,   _type):append_text(" (" .. ofp_instruction_type[_type] .. ")")
+    subtree:add(ofp_instruction_length_F, _length_range, _length)
+
+    if _length < 8 then
+        return
+    end
+
+    if ofp_instruction_type[_type] == "OFPIT_GOTO_TABLE" then
+        local _table_id_range = buffer(pointer,1)
+        local _padding_range  = buffer(pointer+1,3)
+        pointer = pointer + 4
+
+        local _table_id = _table_id_range:uint()
+        local _padding  = tostring(_padding_range)
+
+        subtree:add(ofp_instruction_table_id_F, _table_id_range, _table_id)
+        subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
+
+    elseif ofp_instruction_type[_type] == "OFPIT_WRITE_METADATA" then
+        local _padding_range       = buffer(pointer,4)
+        local _metadata_range      = buffer(pointer+4,8)
+        local _metadata_mask_range = buffer(pointer+12,8)
+        pointer = pointer + 20
+
+        local _padding        = tostring(_padding_range)
+        local _metadata       = _metadata_range:uint64()
+        local _metadata_mask  = _metadata_mask_range:uint64()
+
+        subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
+        subtree:add(ofp_instruction_metadata_F, _metadata_range, _metadata)
+        subtree:add(ofp_instruction_metadata_mask_F, _metadata_mask_range, _metadata_mask)
+
+    elseif ofp_instruction_type[_type] == "OFPIT_WRITE_ACTIONS" or
+           ofp_instruction_type[_type] == "OFPIT_APPLY_ACTIONS" or
+           ofp_instruction_type[_type] == "OFPIT_CLEAR_ACTIONS" then
+        local _padding_range  = buffer(pointer,4)
+        pointer = pointer + 4
+        local _padding  = tostring(_padding_range)
+        subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
+
+        -- Action Header dissector
+        offset = ofp_action_header(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+        pointer = pointer + offset
+
+    elseif ofp_instruction_type[_type] == "OFPIT_METER" then
+        local _meter_range  = buffer(pointer,4)
+        pointer = pointer + 4
+        local _meter  = _meter_range:uint()
+        subtree:add(ofp_instruction_meter_F,  _meter_range,  _meter)
+
+    elseif ofp_instruction_type[_type] == "OFPIT_EXPERIMENTER" then
+        -- XXX
+    end
+
+    if buffer:len() <= pointer then
+        return
+    end
+    ofp_instruction(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+end
+
 function ofp_packet_in(buffer, pinfo, tree)
     local _buffer_id_range = buffer(0,4)
     local _total_len_range = buffer(4,2)
@@ -625,21 +838,19 @@ function ofp_match(buffer, pinfo, tree)
     local _type   = _type_range:uint()
     local _length = _length_range:uint()
 
-    local subtree = tree:add(match_F, buffer(0,pointer), "Flow Match Header")
+    local subtree = tree:add(match_F, buffer(0,_length), "Flow Match Header")
     subtree:add(match_type_F,   _type_range,   _type):append_text(" (" .. ofp_match_type_string[_type] .. ")")
     subtree:add(match_length_F, _length_range, _length)
 
-    local alignment = _length
-    while alignment > 8 do
+    while pointer < _length do
         offset = ofp_oxm_field(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
-        alignment = alignment - offset
+        pointer = pointer + offset
     end
-    pointer = pointer + (_length - alignment)
 
-    local _padding_range = buffer(pointer, alignment)
+    local _padding_range = buffer(pointer, math.ceil(_length/8)*8 - pointer)
     local _padding = tostring(_padding_range)
     subtree:add(match_padding_F, _padding_range, _padding)
-    pointer = pointer + alignment
+    pointer = pointer + (math.ceil(_length/8)*8 - pointer)
 
     return pointer
 end
@@ -655,17 +866,16 @@ function ofp_oxm_field(buffer, pinfo, tree)
     local _hasmask = _fh_range:bitfield(7, 1)
     local _length  = _length_range:uint()
 
-    local subtree = tree:add(oxm_F, buffer(0, pointer), "Flow Match Field Structure")
+    local subtree = tree:add(oxm_F, buffer(0, pointer + _length), "Flow Match Field Structure")
     subtree:add(oxm_class_F,   _class_range,  _class):append_text(" (" .. ofp_oxm_field_string[_class] .. ")")
     subtree:add(oxm_field_F,   _fh_range,     _field):append_text(" (" .. oxm_ofb_match_fields[_field][1] .. ")")
     subtree:add(oxm_hasmask_F, _fh_range,     _hasmask)
     subtree:add(oxm_length_F,  _length_range, _length)
 
     local value_bit = oxm_ofb_match_fields[_field][2]
-    local length = math.ceil(value_bit/8)
-    local _value_range = buffer(pointer, length)
-    local _value = _value_range:uint()
-    pointer = pointer + length
+    local _value_range = buffer(pointer, _length)
+    local _value = tostring(_value_range)
+    pointer = pointer + _length
     subtree:add(oxm_value_F, _value_range, _value)
 
     return pointer
