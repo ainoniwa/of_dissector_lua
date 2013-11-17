@@ -31,6 +31,15 @@ oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
 -- TODO: XXX
 oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
 
+-- A.2.5 Action Structures
+ofp_action_header_F        = ProtoField.string("of13.action",          "Action Structures")
+ofp_action_header_type_F   = ProtoField.uint16("of13.action_type",     "One of OFPAT_*")
+ofp_action_header_length_F = ProtoField.uint16("of13.action_length",   "Length of action, including this header")
+
+ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port", base.HEX)
+ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
+ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
+
 -- A.3.1 Handshake
 ofp_switch_features_F              = ProtoField.string("of13.feature",              "Switch features")
 ofp_switch_features_datapath_id_F  = ProtoField.uint64("of13.feature_datapath_id",  "Datapath unique ID", base.HEX)
@@ -48,6 +57,13 @@ ofp_switch_features_capabilities_group_stats_F   = ProtoField.uint32("of13.featu
 ofp_switch_features_capabilities_ip_reasm_F      = ProtoField.uint32("of13.feature_cap_ip_reasm",     "Can reassemble IP fragments", base.HEX, VALS_BOOL, 0x00000020)
 ofp_switch_features_capabilities_queue_stats_F   = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
 ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
+
+-- A.3.7 Packet-Out Message
+packet_out_F            = ProtoField.string("of13.packet_out",            "Packet-Out Message")
+packet_out_buffer_id_F  = ProtoField.uint32("of13.packet_out_buffer_id",  "Datapath ID")
+packet_out_in_port_F    = ProtoField.uint32("of13.packet_out_in_port",    "Input port")
+packet_out_actions_len_F = ProtoField.uint16("of13.packet_out_action_len", "Size of action array")
+packet_out_padding_F    = ProtoField.string("of13.packet_out_padding",    "Padding")
 
 -- A.4.1 Packet-In Message
 packet_in_F           = ProtoField.string("of13.packet_in",           "Packet-In Message")
@@ -82,6 +98,14 @@ of13_proto.fields = {
     oxm_length_F,
     oxm_value_F,
 
+    -- A.2.5 Action Structures
+    ofp_action_header_F,
+    ofp_action_header_type_F,
+    ofp_action_header_length_F,
+    ofp_action_output_port_F,
+    ofp_action_output_max_len_F,
+    ofp_action_output_padding_F,
+
     -- A.3.1 Handshake
     ofp_switch_features_F,
     ofp_switch_features_datapath_id_F,
@@ -99,6 +123,13 @@ of13_proto.fields = {
     ofp_switch_features_capabilities_ip_reasm_F,
     ofp_switch_features_capabilities_queue_stats_F,
     ofp_switch_features_capabilities_port_blocked_F,
+
+    -- A.3.7 Packet-Out Message
+    packet_out_F,
+    packet_out_buffer_id_F,
+    packet_out_in_port_F,
+    packet_out_actions_len_F,
+    packet_out_padding_F,
 
     -- A.4.1 Packet-In Message
     packet_in_F,
@@ -215,6 +246,32 @@ ofp_match_type_string = {
     [1] = "OFPMT_OXM",
 }
 
+-- A.2.5 Action Structure
+ofp_action_type = {
+    [0]      = "OFPAT_OUTPUT",       -- Output to switch port.
+    [11]     = "OFPAT_COPY_TTL_OUT", -- Copy TTL "outwards" -- from next-to-outermost to outermost
+    [12]     = "OFPAT_COPY_TTL_IN",  -- Copy TTL "inwards" -- from outermost to next-to-outermost
+    [15]     = "OFPAT_SET_MPLS_TTL", -- MPLS TTL
+    [16]     = "OFPAT_DEC_MPLS_TTL", -- Decrement MPLS TTL
+    [17]     = "OFPAT_PUSH_VLAN",    -- Push a new VLAN tag
+    [18]     = "OFPAT_POP_VLAN",     -- Pop the outer VLAN tag
+    [19]     = "OFPAT_PUSH_MPLS",    -- Push a new MPLS tag
+    [20]     = "OFPAT_POP_MPLS",     -- Pop the outer MPLS tag
+    [21]     = "OFPAT_SET_QUEUE",    -- Set queue id when outputting to a port
+    [22]     = "OFPAT_GROUP",        -- Apply group.
+    [23]     = "OFPAT_SET_NW_TTL",   -- IP TTL.
+    [24]     = "OFPAT_DEC_NW_TTL",   -- Decrement IP TTL.
+    [25]     = "OFPAT_SET_FIELD",    -- Set a header field using OXM TLV format.
+    [26]     = "OFPAT_PUSH_PBB",     -- Push a new PBB service tag (I-TAG)
+    [27]     = "OFPAT_POP_PBB",      -- Pop the outer PBB service tag (I-TAG)
+    [0xffff] = "OFPAT_EXPERIMENTER",
+}
+
+ofp_controller_max_len = {
+    [0xffe5] = "OFPCML_MAX",       -- maximum max_len value which can be used to request a specific byte length.
+    [0xffff] = "OFPCML_NO_BUFFER", -- indicates that no buffering should be applied and the whole packet is to be sent to the controller.
+}
+
 -- A.3.9 Role Request Message
 ofp_controller_role = {
     [0] = "OFPCR_ROLE_NOCHANGE", -- Don’t change current role.
@@ -303,7 +360,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
     -- TODO: Before this function, place the version switching function.
     if of13_version == 0x04 then
         -- Add OpenFlow 1.3 Tree
-        local of13_tree = tree:add(of13_proto, buffer(), "OpenFlow")
+        local of13_tree = tree:add(of13_proto, buffer(), "OpenFlow 1.3 " .. ofp_type[of13_type])
 
         -- OpenFlow 1.3 general header
         of13_tree:add(version_F, of13_version_range, of13_version):append_text(" (OpenFlow 1.3)")
@@ -352,7 +409,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[of13_type] == "OFPT_PORT_STATUS" then
             return
         elseif ofp_type[of13_type] == "OFPT_PACKET_OUT" then
-            return
+            ofp_packet_out(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[of13_type] == "OFPT_FLOW_MOD" then
             return
         elseif ofp_type[of13_type] == "OFPT_GROUP_MOD" then
@@ -390,39 +447,133 @@ function of13_proto.dissector(buffer, pinfo, tree)
 end
 
 function ofp_features_reply(buffer, pinfo, tree)
-    local ofp_switch_features_datapath_id_range  = buffer(0,8)
-    local ofp_switch_features_n_buffers_range    = buffer(8,4)
-    local ofp_switch_features_n_tables_range     = buffer(12,1)
-    local ofp_switch_features_auxiliary_id_range = buffer(13,1)
-    local ofp_switch_features_padding_range      = buffer(14,2)
-    local ofp_switch_features_capabilities_range = buffer(16,4)
-    local ofp_switch_features_reserved_range     = buffer(20,4)
+    local _datapath_id_range  = buffer(0,8)
+    local _n_buffers_range    = buffer(8,4)
+    local _n_tables_range     = buffer(12,1)
+    local _auxiliary_id_range = buffer(13,1)
+    local _padding_range      = buffer(14,2)
+    local _capabilities_range = buffer(16,4)
+    local _reserved_range     = buffer(20,4)
     local pointer = 24
 
-    local ofp_switch_features_datapath_id  = ofp_switch_features_datapath_id_range:uint64()
-    local ofp_switch_features_n_buffers    = ofp_switch_features_n_buffers_range:uint()
-    local ofp_switch_features_n_tables     = ofp_switch_features_n_tables_range:uint()
-    local ofp_switch_features_auxiliary_id = ofp_switch_features_auxiliary_id_range:uint()
-    local ofp_switch_features_padding      = tostring(ofp_switch_features_padding_range)
-    local ofp_switch_features_capabilities = ofp_switch_features_capabilities_range:uint()
-    local ofp_switch_features_reserved     = tostring(ofp_switch_features_reserved_range)
+    local _datapath_id  = _datapath_id_range:uint64()
+    local _n_buffers    = _n_buffers_range:uint()
+    local _n_tables     = _n_tables_range:uint()
+    local _auxiliary_id = _auxiliary_id_range:uint()
+    local _padding      = tostring(_padding_range)
+    local _capabilities = _capabilities_range:uint()
+    local _reserved     = tostring(_reserved_range)
 
-    -- Add Packet-In Tree
     local subtree = tree:add(ofp_switch_features_F, buffer())
-    subtree:add(ofp_switch_features_datapath_id_F,  ofp_switch_features_datapath_id_range,  ofp_switch_features_datapath_id)
-    subtree:add(ofp_switch_features_n_buffers_F,    ofp_switch_features_n_buffers_range,    ofp_switch_features_n_buffers)
-    subtree:add(ofp_switch_features_n_tables_F,     ofp_switch_features_n_tables_range,     ofp_switch_features_n_tables)
-    subtree:add(ofp_switch_features_auxiliary_id_F, ofp_switch_features_auxiliary_id_range, ofp_switch_features_auxiliary_id)
-    subtree:add(ofp_switch_features_padding_F,      ofp_switch_features_padding_range,      ofp_switch_features_padding)
-    cap_tree = subtree:add(ofp_switch_features_capabilities_F, ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_flow_stats_F,   ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_table_stats_F,  ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_port_stats_F,   ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_group_stats_F,  ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_ip_reasm_F,     ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_queue_stats_F,  ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    cap_tree:add(ofp_switch_features_capabilities_port_blocked_F, ofp_switch_features_capabilities_range, ofp_switch_features_capabilities)
-    subtree:add(ofp_switch_features_reserved_F,     ofp_switch_features_reserved_range,     ofp_switch_features_reserved)
+    subtree:add(ofp_switch_features_datapath_id_F,  _datapath_id_range,  _datapath_id)
+    subtree:add(ofp_switch_features_n_buffers_F,    _n_buffers_range,    _n_buffers)
+    subtree:add(ofp_switch_features_n_tables_F,     _n_tables_range,     _n_tables)
+    subtree:add(ofp_switch_features_auxiliary_id_F, _auxiliary_id_range, _auxiliary_id)
+    subtree:add(ofp_switch_features_padding_F,      _padding_range,      _padding)
+    cap_tree = subtree:add(ofp_switch_features_capabilities_F,    _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_flow_stats_F,   _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_table_stats_F,  _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_port_stats_F,   _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_group_stats_F,  _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_ip_reasm_F,     _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_queue_stats_F,  _capabilities_range, _capabilities)
+    cap_tree:add(ofp_switch_features_capabilities_port_blocked_F, _capabilities_range, _capabilities)
+    subtree:add(ofp_switch_features_reserved_F,     _reserved_range,     _reserved)
+end
+
+function ofp_packet_out(buffer, pinfo, tree)
+    local _buffer_id_range   = buffer(0,4)
+    local _in_port_range     = buffer(4,4)
+    local _actions_len_range = buffer(8,2)
+    local _padding_range     = buffer(10,6)
+    local pointer = 16
+
+    local _buffer_id   = _buffer_id_range:uint()
+    local _in_port     = _in_port_range:uint()
+    local _actions_len = _actions_len_range:uint()
+    local _padding     = tostring(_padding_range)
+
+    local subtree = tree:add(packet_out_F, buffer(), "Packet Out")
+    subtree:add(packet_out_buffer_id_F,   _buffer_id_range,   _buffer_id)
+    subtree:add(packet_out_in_port_F,     _in_port_range,     _in_port)
+    subtree:add(packet_out_actions_len_F, _actions_len_range, _actions_len)
+    subtree:add(packet_out_padding_F,     _padding_range,     _padding)
+
+    -- Action Header dissector
+    offset = ofp_action_header(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+    pointer = pointer + offset
+
+    -- Ethernet dissector(wireshark implements)
+    local raw_frame_range = buffer(pointer,buffer:len()-pointer)
+    Dissector.get("eth"):call(raw_frame_range:tvb(), pinfo, subtree)
+end
+
+function ofp_action_header(buffer, pinfo, tree)
+    local _type_range   = buffer(0,2)
+    local _length_range = buffer(2,2)
+    local pointer = 4
+
+    local _type   = _type_range:uint()
+    local _length = _length_range:uint()
+
+    local subtree = tree:add(ofp_action_header_F, buffer(), "Action header")
+    subtree:add(ofp_action_header_type_F,   _type_range, _type):append_text(" (" .. ofp_action_type[_type] .. ")")
+    subtree:add(ofp_action_header_length_F, _length_range, _length)
+
+    if ofp_action_type[_type] == "OFPAT_OUTPUT" then
+        offset = ofp_action_output(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+    elseif ofp_action_type[action_header_type] == "OFPAT_COPY_TTL_OUT" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_COPY_TTL_IN" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_SET_MPLS_TTL" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_DEC_MPLS_TTL" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_PUSH_VLAN" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_POP_VLAN" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_PUSH_MPLS" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_POP_MPLS" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_SET_QUEUE" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_GROUP" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_SET_NW_TTL" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_DEC_NW_TTL" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_SET_FIELD" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_PUSH_PBB" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_POP_PBB" then
+        offset = 0
+    elseif ofp_action_type[action_header_type] == "OFPAT_EXPERIMENTER" then
+        offset = 0
+    end
+
+    pointer = pointer + offset
+    return pointer
+end
+
+function ofp_action_output(buffer, pinfo, tree)
+    local _port_range    = buffer(0,4)
+    local _max_len_range = buffer(4,2)
+    local _padding_range = buffer(6,6)
+    local pointer = 12
+
+    local _port    = _port_range:uint()
+    local _max_len = _max_len_range:uint()
+    local _padding = tostring(_padding_range)
+
+    tree:add(ofp_action_output_port_F,    _port_range,    _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
+    tree:add(ofp_action_output_padding_F, _padding_range, _padding)
+    return pointer
 end
 
 function ofp_packet_in(buffer, pinfo, tree)
@@ -443,7 +594,7 @@ function ofp_packet_in(buffer, pinfo, tree)
     local packet_in_tree = tree:add(packet_in_F, buffer(), "Packet In")
     packet_in_tree:add(packet_in_buffer_id_F, packet_in_buffer_id_range, packet_in_buffer_id)
     packet_in_tree:add(packet_in_total_len_F, packet_in_total_len_range, packet_in_total_len)
-    packet_in_tree:add(packet_in_reason_F,    packet_in_reason_range,    packet_in_reason)
+    packet_in_tree:add(packet_in_reason_F,    packet_in_reason_range,    packet_in_reason):append_text(" (" .. ofp_packet_in_reason[packet_in_reason] .. ")")
     packet_in_tree:add(packet_in_table_id_F,  packet_in_table_id_range,  packet_in_table_id)
     packet_in_tree:add(packet_in_cookie_F,    packet_in_cookie_range,    packet_in_cookie)
 
@@ -461,7 +612,6 @@ function ofp_packet_in(buffer, pinfo, tree)
     local raw_frame_range = buffer(pointer,buffer:len()-pointer)
     Dissector.get("eth"):call(raw_frame_range:tvb(), pinfo, packet_in_tree)
 end
-
 
 function ofp_match(buffer, pinfo, tree)
     local match_type_range   = buffer(0,2)
