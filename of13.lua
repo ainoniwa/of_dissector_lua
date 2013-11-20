@@ -42,9 +42,9 @@ ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_m
 ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter", "Meter")
 
 -- A.2.5 Action Structures
-ofp_action_header_F        = ProtoField.string("of13.action",          "Action")
-ofp_action_header_type_F   = ProtoField.uint16("of13.action_type",     "One of OFPAT_*")
-ofp_action_header_length_F = ProtoField.uint16("of13.action_length",   "Length of action, including this header")
+ofp_action_header_F         = ProtoField.string("of13.action",         "Action")
+ofp_action_header_type_F    = ProtoField.uint16("of13.action_type",    "One of OFPAT_*")
+ofp_action_header_length_F  = ProtoField.uint16("of13.action_length",  "Length of action, including this header")
 ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port")
 ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
 ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
@@ -71,8 +71,8 @@ ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.featu
 ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
 ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
 ofp_flow_mod_cookie_mask_F  = ProtoField.uint64("of13.flowmod_cookie_mask",  "Cookie mask", base.HEX)
-ofp_flow_mod_table_id_F     = ProtoField.uint8 ("of13.flowmod_table_id",     "Table ID")
-ofp_flow_mod_command_F      = ProtoField.uint8 ("of13.flowmod_command",      "Command")
+ofp_flow_mod_table_id_F     = ProtoField.uint8("of13.flowmod_table_id",     "Table ID")
+ofp_flow_mod_command_F      = ProtoField.uint8("of13.flowmod_command",      "Command")
 ofp_flow_mod_idle_timeout_F = ProtoField.uint16("of13.flowmod_idle_timeout", "Idle timeout")
 ofp_flow_mod_hard_timeout_F = ProtoField.uint16("of13.flowmod_hard_timeout", "Hard timeout")
 ofp_flow_mod_priority_F     = ProtoField.uint16("of13.flowmod_priority",     "Priority")
@@ -82,18 +82,18 @@ ofp_flow_mod_out_group_F    = ProtoField.uint32("of13.flowmod_out_group",    "Ou
 ofp_flow_mod_flags_F        = ProtoField.uint16("of13.flowmod_flags",        "Flags", base.HEX)
 ofp_flow_mod_padding_F      = ProtoField.string("of13.flowmod_padding",      "Padding")
 
-ofp_flow_mod_flags_send_flow_rem_F = ProtoField.uint16("of13.mod_flag_flow_rem", "Flow removed", base.HEX, VALS_BOOL, 0x0001)
+ofp_flow_mod_flags_send_flow_rem_F = ProtoField.uint16("of13.mod_flag_flow_rem",      "Flow removed", base.HEX, VALS_BOOL, 0x0001)
 ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_overlap", "Check overlap", base.HEX, VALS_BOOL, 0x0002)
-ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count", "Reset count", base.HEX, VALS_BOOL, 0x0004)
-ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count", "No packet count", base.HEX, VALS_BOOL, 0x0008)
-ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count", "No byte count", base.HEX, VALS_BOOL, 0x0010)
+ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count",   "Reset count", base.HEX, VALS_BOOL, 0x0004)
+ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count",  "No packet count", base.HEX, VALS_BOOL, 0x0008)
+ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
 
 -- A.3.7 Packet-Out Message
-packet_out_F            = ProtoField.string("of13.packet_out",            "Packet-Out Message")
-packet_out_buffer_id_F  = ProtoField.uint32("of13.packet_out_buffer_id",  "Datapath ID")
-packet_out_in_port_F    = ProtoField.uint32("of13.packet_out_in_port",    "Input port")
+packet_out_F             = ProtoField.string("of13.packet_out",            "Packet-Out Message")
+packet_out_buffer_id_F   = ProtoField.uint32("of13.packet_out_buffer_id",  "Datapath ID")
+packet_out_in_port_F     = ProtoField.uint32("of13.packet_out_in_port",    "Input port")
 packet_out_actions_len_F = ProtoField.uint16("of13.packet_out_action_len", "Size of action array")
-packet_out_padding_F    = ProtoField.string("of13.packet_out_padding",    "Padding")
+packet_out_padding_F     = ProtoField.string("of13.packet_out_padding",    "Padding")
 
 -- A.4.1 Packet-In Message
 packet_in_F           = ProtoField.string("of13.packet_in",           "Packet-In Message")
@@ -260,7 +260,7 @@ ofp_type = {
     [29] = "OFPT_METER_MOD",
 }
 
-ofp_port_no = {
+ofp_port_no = { 
     -- Maximum number of physical and logical switch ports.
     [0xffffff00] = "OFPP_MAX",
     -- Reserved OpenFlow Port (fake output "ports").
@@ -352,7 +352,6 @@ ofp_flow_mod_command = {
     [3] = "OFPFC_DELETE",        -- Delete all matching flows.
     [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
 }
-
 
 -- A.3.9 Role Request Message
 ofp_controller_role = {
@@ -477,7 +476,6 @@ function of13_proto.dissector(buffer, pinfo, tree)
             return
         elseif ofp_type[_type] == "OFPT_FEATURES_REPLY" then
             ofp_features_reply(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
-            return
         elseif ofp_type[_type] == "OFPT_GET_CONFIG_REQUEST" then
             return
         elseif ofp_type[_type] == "OFPT_GET_CONFIG_REPLY" then
@@ -598,7 +596,7 @@ function ofp_action_header(buffer, pinfo, tree)
     local _type   = _type_range:uint()
     local _length = _length_range:uint()
 
-    local subtree = tree:add(ofp_action_header_F, buffer(), "Action header")
+    local subtree = tree:add(ofp_action_header_F, buffer(0,_length), "Action header")
     subtree:add(ofp_action_header_type_F,   _type_range,   _type):append_text(" (" .. ofp_action_type[_type] .. ")")
     subtree:add(ofp_action_header_length_F, _length_range, _length)
 
@@ -653,9 +651,9 @@ function ofp_action_output(buffer, pinfo, tree)
     local _padding = tostring(_padding_range)
 
     if ofp_port_no[_port] == nil then
-        tree:add(ofp_action_output_port_F,    _port_range,    _port)
+        tree:add(ofp_action_output_port_F, _port_range, _port)
     else
-        tree:add(ofp_action_output_port_F,    _port_range,    _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+        tree:add(ofp_action_output_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
     end
     tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
     tree:add(ofp_action_output_padding_F, _padding_range, _padding)
@@ -691,23 +689,23 @@ function ofp_flow_mod(buffer, pinfo, tree)
     local _padding      = tostring(_padding_range)
 
     local subtree = tree:add(ofp_flow_mod_F, buffer(), "")
-    subtree:add(ofp_flow_mod_cookie_F      , _cookie_range      , _cookie      )
-    subtree:add(ofp_flow_mod_cookie_mask_F , _cookie_mask_range , _cookie_mask )
-    subtree:add(ofp_flow_mod_table_id_F    , _table_id_range    , _table_id    )
-    subtree:add(ofp_flow_mod_command_F     , _command_range     , _command     ):append_text(" (" .. ofp_flow_mod_command[_command] .. ")")
+    subtree:add(ofp_flow_mod_cookie_F,       _cookie_range,       _cookie)
+    subtree:add(ofp_flow_mod_cookie_mask_F,  _cookie_mask_range,  _cookie_mask)
+    subtree:add(ofp_flow_mod_table_id_F,     _table_id_range,     _table_id)
+    subtree:add(ofp_flow_mod_command_F,      _command_range,      _command):append_text(" (" .. ofp_flow_mod_command[_command] .. ")")
     subtree:add(ofp_flow_mod_idle_timeout_F, _idle_timeout_range, _idle_timeout)
     subtree:add(ofp_flow_mod_hard_timeout_F, _hard_timeout_range, _hard_timeout)
-    subtree:add(ofp_flow_mod_priority_F    , _priority_range    , _priority    )
-    subtree:add(ofp_flow_mod_buffer_id_F   , _buffer_id_range   , _buffer_id   )
-    subtree:add(ofp_flow_mod_out_port_F    , _out_port_range    , _out_port    )
-    subtree:add(ofp_flow_mod_out_group_F   , _out_group_range   , _out_group   )
-    flags_tree = subtree:add(ofp_flow_mod_flags_F       , _flags_range       , _flags       )
-    flags_tree:add(ofp_flow_mod_flags_send_flow_rem_F,   _flags_range, _flags)
-    flags_tree:add(ofp_flow_mod_flags_check_overlap_F,   _flags_range, _flags)
-    flags_tree:add(ofp_flow_mod_flags_reset_counts_F ,   _flags_range, _flags)
-    flags_tree:add(ofp_flow_mod_flags_no_pkt_counts_F,   _flags_range, _flags)
-    flags_tree:add(ofp_flow_mod_flags_no_byt_counts_F,   _flags_range, _flags)
-    subtree:add(ofp_flow_mod_padding_F     , _padding_range     , _padding     )
+    subtree:add(ofp_flow_mod_priority_F,     _priority_range,     _priority)
+    subtree:add(ofp_flow_mod_buffer_id_F,    _buffer_id_range,    _buffer_id)
+    subtree:add(ofp_flow_mod_out_port_F,     _out_port_range,     _out_port)
+    subtree:add(ofp_flow_mod_out_group_F,    _out_group_range,    _out_group)
+    flags_tree = subtree:add(ofp_flow_mod_flags_F, _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_send_flow_rem_F, _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_check_overlap_F, _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_reset_counts_F , _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_no_pkt_counts_F, _flags_range, _flags)
+    flags_tree:add(ofp_flow_mod_flags_no_byt_counts_F, _flags_range, _flags)
+    subtree:add(ofp_flow_mod_padding_F,      _padding_range,      _padding)
 
     -- Flow Match Header dissector
     offset = ofp_match(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
@@ -872,7 +870,6 @@ function ofp_oxm_field(buffer, pinfo, tree)
     subtree:add(oxm_hasmask_F, _fh_range,     _hasmask)
     subtree:add(oxm_length_F,  _length_range, _length)
 
-    local value_bit = oxm_ofb_match_fields[_field][2]
     local _value_range = buffer(pointer, _length)
     local _value = tostring(_value_range)
     pointer = pointer + _length
