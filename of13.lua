@@ -67,6 +67,11 @@ ofp_switch_features_capabilities_ip_reasm_F      = ProtoField.uint32("of13.featu
 ofp_switch_features_capabilities_queue_stats_F   = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
 ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
 
+-- A.3.2 Switch Configuration
+ofp_config_F               = ProtoField.string("of13.config",               "Switch Configuration")
+ofp_config_flags_F         = ProtoField.uint16("of13.config_flags",         "OFPC_* flags", base.HEX)
+ofp_config_miss_send_len_F = ProtoField.uint16("of13.config_miss_send_len", "Max bytes of packet")
+
 -- A.3.4.1 Modify Flow Entry Message
 ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
 ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
@@ -163,6 +168,11 @@ of13_proto.fields = {
     ofp_switch_features_capabilities_ip_reasm_F,
     ofp_switch_features_capabilities_queue_stats_F,
     ofp_switch_features_capabilities_port_blocked_F,
+
+    -- A.3.2 Switch Configuratiion
+    ofp_config_F,
+    ofp_config_flags_F,
+    ofp_config_miss_send_len_F,
 
     -- A.3.4.1 Modify Flow Entry Message
     ofp_flow_mod_F,
@@ -477,11 +487,11 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[_type] == "OFPT_FEATURES_REPLY" then
             ofp_features_reply(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_GET_CONFIG_REQUEST" then
+            -- There is no body for OFPT_GET_CONFIG_REQUEST
             return
-        elseif ofp_type[_type] == "OFPT_GET_CONFIG_REPLY" then
-            return
-        elseif ofp_type[_type] == "OFPT_SET_CONFIG" then
-            return
+        elseif ofp_type[_type] == "OFPT_GET_CONFIG_REPLY" or 
+               ofp_type[_type] == "OFPT_SET_CONFIG" then
+            ofp_switch_config(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_PACKET_IN" then
             ofp_packet_in(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_FLOW_REMOVED" then
@@ -587,6 +597,20 @@ function ofp_packet_out(buffer, pinfo, tree)
     local raw_frame_range = buffer(pointer,buffer:len()-pointer)
     Dissector.get("eth"):call(raw_frame_range:tvb(), pinfo, subtree)
 end
+
+function ofp_switch_config(buffer, pinfo, tree)
+    local _flags_range         = buffer(0,2)
+    local _miss_send_len_range = buffer(2,2)
+    local pointer = 4
+
+    local _flags         = _flags_range:uint()
+    local _miss_send_len = _miss_send_len_range:uint()
+
+    local subtree = tree:add(ofp_config_F, buffer(), "Switch configuration")
+    subtree:add(ofp_config_flags_F,         _flags_range,         _flags)
+    subtree:add(ofp_config_miss_send_len_F, _miss_send_len_range, _miss_send_len)
+end
+
 
 function ofp_action_header(buffer, pinfo, tree)
     local _type_range   = buffer(0,2)
