@@ -76,8 +76,8 @@ ofp_config_miss_send_len_F = ProtoField.uint16("of13.config_miss_send_len", "Max
 ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
 ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
 ofp_flow_mod_cookie_mask_F  = ProtoField.uint64("of13.flowmod_cookie_mask",  "Cookie mask", base.HEX)
-ofp_flow_mod_table_id_F     = ProtoField.uint8("of13.flowmod_table_id",     "Table ID")
-ofp_flow_mod_command_F      = ProtoField.uint8("of13.flowmod_command",      "Command")
+ofp_flow_mod_table_id_F     = ProtoField.uint8("of13.flowmod_table_id",      "Table ID")
+ofp_flow_mod_command_F      = ProtoField.uint8("of13.flowmod_command",       "Command")
 ofp_flow_mod_idle_timeout_F = ProtoField.uint16("of13.flowmod_idle_timeout", "Idle timeout")
 ofp_flow_mod_hard_timeout_F = ProtoField.uint16("of13.flowmod_hard_timeout", "Hard timeout")
 ofp_flow_mod_priority_F     = ProtoField.uint16("of13.flowmod_priority",     "Priority")
@@ -92,6 +92,12 @@ ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_over
 ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count",   "Reset count", base.HEX, VALS_BOOL, 0x0004)
 ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count",  "No packet count", base.HEX, VALS_BOOL, 0x0008)
 ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
+
+-- A.3.5 Multipart Messages
+ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Messages")
+ofp_multipart_request_type_F    = ProtoField.uint16("of13.multipart_request_type",    "Type")
+ofp_multipart_request_flags_F   = ProtoField.uint16("of13.multipart_request_flags",   "Flags")
+ofp_multipart_request_padding_F = ProtoField.string("of13.multipart_request_padding", "Padding")
 
 -- A.3.7 Packet-Out Message
 packet_out_F             = ProtoField.string("of13.packet_out",            "Packet-Out Message")
@@ -194,6 +200,12 @@ of13_proto.fields = {
     ofp_flow_mod_flags_reset_counts_F,
     ofp_flow_mod_flags_no_pkt_counts_F,
     ofp_flow_mod_flags_no_byt_counts_F,
+
+    -- A.3.5 Multipart Messages
+    ofp_multipart_request_F,
+    ofp_multipart_request_type_F,
+    ofp_multipart_request_flags_F,
+    ofp_multipart_request_padding_F,
 
     -- A.3.7 Packet-Out Message
     packet_out_F,
@@ -363,6 +375,83 @@ ofp_flow_mod_command = {
     [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
 }
 
+-- A.3.5 Multipart Messages
+ofp_multipart_request_flags = {
+    [0] = "No more request",
+    [1] = "OFPMPF_REQ_MORE",
+}
+
+ofp_multipart_reply_flags = {
+    [1] = "OFPMPF_REPLY_MORE",
+}
+
+ofp_multipart_types = {
+    -- Description of this OpenFlow switch.
+    -- The request body is empty.
+    -- The reply body is struct ofp_desc.
+    [0] = "OFPMP_DESC",
+    -- Individual flow statistics.
+    -- The request body is struct ofp_flow_stats_request.
+    -- The reply body is an array of struct ofp_flow_stats.
+    [1] = "OFPMP_FLOW",
+    -- Aggregate flow statistics.
+    -- The request body is struct ofp_aggregate_stats_request.
+    -- The reply body is struct ofp_aggregate_stats_reply.
+    [2] = "OFPMP_AGGREGATE",
+    -- Flow table statistics.
+    -- The request body is empty.
+    -- The reply body is an array of struct ofp_table_stats.
+    [3] = "OFPMP_TABLE",
+    -- Port statistics.
+    -- The request body is struct ofp_port_stats_request.
+    -- The reply body is an array of struct ofp_port_stats.
+    [4] = "OFPMP_PORT_STATS",
+    -- Queue statistics for a port
+    -- The request body is struct ofp_queue_stats_request.
+    -- The reply body is an array of struct ofp_queue_stats
+    [5] = "OFPMP_QUEUE",
+    -- Group counter statistics.
+    -- The request body is struct ofp_group_stats_request.
+    -- The reply is an array of struct ofp_group_stats.
+    [6] = "OFPMP_GROUP",
+    -- Group description.
+    -- The request body is empty.
+    -- The reply body is an array of struct ofp_group_desc_stats.
+    [7] = "OFPMP_GROUP_DESC",
+    -- Group features.
+    -- The request body is empty.
+    -- The reply body is struct ofp_group_features.
+    [8] = "OFPMP_GROUP_FEATURES",
+    -- Meter statistics.
+    -- The request body is struct ofp_meter_multipart_requests.
+    -- The reply body is an array of struct ofp_meter_stats.
+    [9] = "OFPMP_METER",
+    -- Meter configuration.
+    -- The request body is struct ofp_meter_multipart_requests.
+    -- The reply body is an array of struct ofp_meter_config.
+    [10] = "OFPMP_METER_CONFIG",
+    -- Meter features.
+    -- The request body is empty.
+    -- The reply body is struct ofp_meter_features.
+    [11] = "OFPMP_METER_FEATURES",
+    -- Table features.
+    -- The request body is either empty or contains an array of
+    -- struct ofp_table_features containing the controller's
+    -- desired view of the switch. If the switch is unable to
+    -- set the specified view an error is returned.
+    -- The reply body is an array of struct ofp_table_features.
+    [12] = "OFPMP_TABLE_FEATURES",
+    -- Port description.
+    -- The request body is empty.
+    -- The reply body is an array of struct ofp_port.
+    [13] = "OFPMP_PORT_DESC",
+    -- Experimenter extension.
+    -- The request and reply bodies begin with
+    -- struct ofp_experimenter_multipart_header.
+    -- The request and reply bodies are otherwise experimenter-defined.
+    [0xffff] = "OFPMP_EXPERIMENTER",
+}
+
 -- A.3.9 Role Request Message
 ofp_controller_role = {
     [0] = "OFPCR_ROLE_NOCHANGE", -- Don’t change current role.
@@ -509,7 +598,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[_type] == "OFPT_TABLE_MOD" then
             return
         elseif ofp_type[_type] == "OFPT_MULTIPART_REQUEST" then
-            return
+            ofp_multipart_request(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_MULTIPART_REPLY" then
             return
         elseif ofp_type[_type] == "OFPT_BARRIER_REQUEST" then
@@ -608,9 +697,64 @@ function ofp_switch_config(buffer, pinfo, tree)
 
     local subtree = tree:add(ofp_config_F, buffer(), "Switch configuration")
     subtree:add(ofp_config_flags_F,         _flags_range,         _flags)
+    -- TODO: ofp_config_flags
     subtree:add(ofp_config_miss_send_len_F, _miss_send_len_range, _miss_send_len)
 end
 
+function ofp_multipart_request(buffer, pinfo, tree)
+    local _type_range    = buffer(0,2)
+    local _flags_range   = buffer(2,2)
+    local _padding_range = buffer(4,4)
+    local pointer = 8
+
+    local _type       = _type_range:uint()
+    local _flags      = _flags_range:uint()
+    local _flags_more = _flags_range:bitfield(0, 1)
+    local _padding    = tostring(_padding_range)
+
+    local subtree = tree:add(ofp_multipart_request_F, buffer(), "Multipart request")
+    subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
+    if ofp_multipart_request_flags[_flags] == nil then
+        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (Not defined)")
+    else
+        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
+    end
+    subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
+
+    if ofp_multipart_types[_flags] == "OFPMP_DESC" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_FLOW" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_AGGREGATE" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_TABLE" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_PORT_STATS" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_QUEUE" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP_DESC" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP_FEATURES" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_METER" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_METER_CONFIG" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_TABLE_FEATURES" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_PORT_DESC" then
+
+    elseif ofp_multipart_types[_flags] == "OFPMP_EXPERIMENTER" then
+
+    end
+
+    if _flags_more == 0 then
+        return
+    end
+end
 
 function ofp_action_header(buffer, pinfo, tree)
     local _type_range   = buffer(0,2)
