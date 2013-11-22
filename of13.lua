@@ -45,7 +45,7 @@ ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter", "M
 ofp_action_header_F         = ProtoField.string("of13.action",         "Action")
 ofp_action_header_type_F    = ProtoField.uint16("of13.action_type",    "One of OFPAT_*")
 ofp_action_header_length_F  = ProtoField.uint16("of13.action_length",  "Length of action, including this header")
-ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port")
+ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port", base.HEX)
 ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
 ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
 
@@ -868,7 +868,11 @@ function ofp_action_output(buffer, pinfo, tree)
     else
         tree:add(ofp_action_output_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
     end
+    if ofp_controller_max_len[_max_len] == nil then
+        tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len)
+    else
         tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
+    end
     tree:add(ofp_action_output_padding_F, _padding_range, _padding)
     return pointer
 end
