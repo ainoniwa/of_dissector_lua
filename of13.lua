@@ -94,10 +94,15 @@ ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_cou
 ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
 
 -- A.3.5 Multipart Messages
-ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Messages")
+ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Reqeust")
 ofp_multipart_request_type_F    = ProtoField.uint16("of13.multipart_request_type",    "Type")
 ofp_multipart_request_flags_F   = ProtoField.uint16("of13.multipart_request_flags",   "Flags")
 ofp_multipart_request_padding_F = ProtoField.string("of13.multipart_request_padding", "Padding")
+
+ofp_multipart_reply_F         = ProtoField.string("of13.multipart_reply",         "Multipart Reply")
+ofp_multipart_reply_type_F    = ProtoField.uint16("of13.multipart_reply_type",    "Type")
+ofp_multipart_reply_flags_F   = ProtoField.uint16("of13.multipart_reply_flags",   "Flags")
+ofp_multipart_reply_padding_F = ProtoField.string("of13.multipart_reply_padding", "Padding")
 
 -- A.3.7 Packet-Out Message
 packet_out_F             = ProtoField.string("of13.packet_out",            "Packet-Out Message")
@@ -206,6 +211,11 @@ of13_proto.fields = {
     ofp_multipart_request_type_F,
     ofp_multipart_request_flags_F,
     ofp_multipart_request_padding_F,
+
+    ofp_multipart_reply_F,
+    ofp_multipart_reply_type_F,
+    ofp_multipart_reply_flags_F,
+    ofp_multipart_reply_padding_F,
 
     -- A.3.7 Packet-Out Message
     packet_out_F,
@@ -377,11 +387,12 @@ ofp_flow_mod_command = {
 
 -- A.3.5 Multipart Messages
 ofp_multipart_request_flags = {
-    [0] = "No more request",
+    [0] = "Last in the next",
     [1] = "OFPMPF_REQ_MORE",
 }
 
 ofp_multipart_reply_flags = {
+    [0] = "Last in the next",
     [1] = "OFPMPF_REPLY_MORE",
 }
 
@@ -600,7 +611,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[_type] == "OFPT_MULTIPART_REQUEST" then
             ofp_multipart_request(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_MULTIPART_REPLY" then
-            return
+            ofp_multipart_reply(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
         elseif ofp_type[_type] == "OFPT_BARRIER_REQUEST" then
             return
         elseif ofp_type[_type] == "OFPT_BARRIER_REPLY" then
@@ -712,7 +723,38 @@ function ofp_multipart_request(buffer, pinfo, tree)
     local _flags_more = _flags_range:bitfield(0, 1)
     local _padding    = tostring(_padding_range)
 
-    local subtree = tree:add(ofp_multipart_request_F, buffer(), "Multipart request")
+    if ofp_multipart_types[_type] == "OFPMP_DESC" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_FLOW" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_AGGREGATE" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_TABLE" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_PORT_STATS" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_QUEUE" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP_DESC" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP_FEATURES" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER_CONFIG" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_TABLE_FEATURES" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_PORT_DESC" then
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_EXPERIMENTER" then
+        offset = 0
+    end
+    pointer = pointer + offset
+
+    local subtree = tree:add(ofp_multipart_request_F, buffer(0, pointer), ofp_multipart_request_flags[_flags])
     subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
     if ofp_multipart_request_flags[_flags] == nil then
         subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (Not defined)")
@@ -721,38 +763,41 @@ function ofp_multipart_request(buffer, pinfo, tree)
     end
     subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
 
-    if ofp_multipart_types[_flags] == "OFPMP_DESC" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_FLOW" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_AGGREGATE" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_TABLE" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_PORT_STATS" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_QUEUE" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP_DESC" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_GROUP_FEATURES" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_METER" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_METER_CONFIG" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_TABLE_FEATURES" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_PORT_DESC" then
-
-    elseif ofp_multipart_types[_flags] == "OFPMP_EXPERIMENTER" then
-
+    if _flags_more == 1 then
+        ofp_multipart_request(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
     end
 
     if _flags_more == 0 then
-        return
+        Dissector.get("of13"):call(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
+    end
+end
+
+function ofp_multipart_reply(buffer, pinfo, tree)
+    local _type_range    = buffer(0,2)
+    local _flags_range   = buffer(2,2)
+    local _padding_range = buffer(4,4)
+    local pointer = 8
+
+    local _type       = _type_range:uint()
+    local _flags      = _flags_range:uint()
+    local _flags_more = _flags_range:bitfield(0, 1)
+    local _padding    = tostring(_padding_range)
+
+    local subtree = tree:add(ofp_multipart_reply_F, buffer(), "Multipart reply")
+    subtree:add(ofp_multipart_reply_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
+    if ofp_multipart_reply_flags[_flags] == nil then
+        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (Not defined)")
+    else
+        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_reply_flags[_flags] .. ")")
+    end
+    subtree:add(ofp_multipart_reply_padding_F, _padding_range, _padding)
+
+    if _flags_more == 1 then
+        ofp_multipart_reply(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
+    end
+
+    if _flags_more == 0 then
+        Dissector.get("of13"):call(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
     end
 end
 
@@ -823,7 +868,7 @@ function ofp_action_output(buffer, pinfo, tree)
     else
         tree:add(ofp_action_output_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
     end
-    tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
+        tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
     tree:add(ofp_action_output_padding_F, _padding_range, _padding)
     return pointer
 end
