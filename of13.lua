@@ -104,12 +104,16 @@ ofp_multipart_reply_type_F    = ProtoField.uint16("of13.multipart_reply_type",  
 ofp_multipart_reply_flags_F   = ProtoField.uint16("of13.multipart_reply_flags",   "Flags")
 ofp_multipart_reply_padding_F = ProtoField.string("of13.multipart_reply_padding", "Padding")
 
+-- 7.3.5.1 Description
+ofp_desc_mfr_desc_F   = ProtoField.string("of13.desc_mfr",    "Manufacturer")
+ofp_desc_hw_desc_F    = ProtoField.string("of13.desc_hw",     "Hardware")
+ofp_desc_sw_desc_F    = ProtoField.string("of13.desc_sw",     "Software")
+ofp_desc_serial_num_F = ProtoField.string("of13.desc_serial", "Serial")
+ofp_desc_dp_desc_F    = ProtoField.string("of13.desc_dp",     "Description")
+
 -- 7.3.5.6 Port Statistics
-ofp_port_stats_request_F         = ProtoField.string("of13.port_stats_request",         "Port Statistics")
 ofp_port_stats_request_port_F    = ProtoField.uint32("of13.port_stats_request_port",    "Port")
 ofp_port_stats_request_padding_F = ProtoField.string("of13.port_stats_request_padding", "Padding")
-
-ofp_port_stats_reply_F               = ProtoField.string("of13.port_stats_request",               "Port Statistics")
 ofp_port_stats_reply_port_F          = ProtoField.uint32("of13.port_stats_request_port",          "Port")
 ofp_port_stats_reply_padding_F       = ProtoField.string("of13.port_stats_request_padding",       "Padding")
 ofp_port_stats_reply_rx_packets_F    = ProtoField.uint64("of13.port_stats_request_rx_packets",    "RX packets")
@@ -240,12 +244,17 @@ of13_proto.fields = {
     ofp_multipart_reply_flags_F,
     ofp_multipart_reply_padding_F,
 
+    -- 7.3.5.1 Description
+    ofp_desc_mfr_desc_F,
+    ofp_desc_hw_desc_F,
+    ofp_desc_sw_desc_F,
+    ofp_desc_serial_num_F,
+    ofp_desc_dp_desc_F,
+
     -- 7.3.5.6 Port Statistics
-    ofp_port_stats_request_F,
     ofp_port_stats_request_port_F,
     ofp_port_stats_request_padding_F,
 
-    ofp_port_stats_reply_F,
     ofp_port_stats_reply_port_F,
     ofp_port_stats_reply_padding_F,
     ofp_port_stats_reply_rx_packets_F,
@@ -828,7 +837,7 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     offset = 0
     if ofp_multipart_types[_type] == "OFPMP_DESC" then
         -- The reply body is struct ofp_desc.
-        offset = 0
+        offset = ofp_desc(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, subtree)
     elseif ofp_multipart_types[_type] == "OFPMP_FLOW" then
         -- The reply body is an array of struct ofp_flow_stats.
         offset = 0
@@ -887,6 +896,30 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     if _flags_more == 0 then
         Dissector.get("of13"):call(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
     end
+end
+
+function ofp_desc(buffer, pinfo, tree)
+    DESC_STR_LEN = 256
+    SERIAL_NUM_LEN = 32
+    local _mfr_desc_range   = buffer(0,DESC_STR_LEN)
+    local _hw_desc_range    = buffer(256,DESC_STR_LEN)
+    local _sw_desc_range    = buffer(512,DESC_STR_LEN)
+    local _serial_num_range = buffer(768,SERIAL_NUM_LEN)
+    local _dp_desc_range    = buffer(800,DESC_STR_LEN)
+    local pointer = 1056
+
+    local _mfr_desc   = _mfr_desc_range:stringz()
+    local _hw_desc    = _hw_desc_range:stringz()
+    local _sw_desc    = _sw_desc_range:stringz()
+    local _serial_num = _serial_num_range:stringz()
+    local _dp_desc    = _dp_desc_range:stringz()
+
+    tree:add(ofp_desc_mfr_desc_F  , _mfr_desc_range  , _mfr_desc  )
+    tree:add(ofp_desc_hw_desc_F   , _hw_desc_range   , _hw_desc   )
+    tree:add(ofp_desc_sw_desc_F   , _sw_desc_range   , _sw_desc   )
+    tree:add(ofp_desc_serial_num_F, _serial_num_range, _serial_num)
+    tree:add(ofp_desc_dp_desc_F   , _dp_desc_range   , _dp_desc   )
+    return pointer
 end
 
 function ofp_port_stats_request(buffer, pinfo, tree)
@@ -964,36 +997,6 @@ function ofp_port_stats_reply(buffer, pinfo, tree)
     tree:add(ofp_port_stats_reply_duration_nsec_F, _duration_nsec_range, _duration_nsec)
     return pointer
 end
-
----- Description of this OpenFlow switch.
---[0] = "OFPMP_DESC",
----- Individual flow statistics.
---[1] = "OFPMP_FLOW",
----- Aggregate flow statistics.
---[2] = "OFPMP_AGGREGATE",
----- Flow table statistics.
---[3] = "OFPMP_TABLE",
----- Port statistics.
---[4] = "OFPMP_PORT_STATS",
----- Queue statistics for a port
---[5] = "OFPMP_QUEUE",
----- Group counter statistics.
---[6] = "OFPMP_GROUP",
----- Group description.
---[7] = "OFPMP_GROUP_DESC",
----- Group features.
---[8] = "OFPMP_GROUP_FEATURES",
----- Meter statistics.
---[9] = "OFPMP_METER",
----- Meter configuration.
---[10] = "OFPMP_METER_CONFIG",
----- Meter features.
---[11] = "OFPMP_METER_FEATURES",
----- Table features.
---[12] = "OFPMP_TABLE_FEATURES",
----- Port description.
---[13] = "OFPMP_PORT_DESC",
----- Experimenter extension.
 
 function ofp_action_header(buffer, pinfo, tree)
     local _type_range   = buffer(0,2)
