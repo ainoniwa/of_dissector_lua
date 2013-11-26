@@ -398,68 +398,34 @@ ofp_multipart_reply_flags = {
 
 ofp_multipart_types = {
     -- Description of this OpenFlow switch.
-    -- The request body is empty.
-    -- The reply body is struct ofp_desc.
     [0] = "OFPMP_DESC",
     -- Individual flow statistics.
-    -- The request body is struct ofp_flow_stats_request.
-    -- The reply body is an array of struct ofp_flow_stats.
     [1] = "OFPMP_FLOW",
     -- Aggregate flow statistics.
-    -- The request body is struct ofp_aggregate_stats_request.
-    -- The reply body is struct ofp_aggregate_stats_reply.
     [2] = "OFPMP_AGGREGATE",
     -- Flow table statistics.
-    -- The request body is empty.
-    -- The reply body is an array of struct ofp_table_stats.
     [3] = "OFPMP_TABLE",
     -- Port statistics.
-    -- The request body is struct ofp_port_stats_request.
-    -- The reply body is an array of struct ofp_port_stats.
     [4] = "OFPMP_PORT_STATS",
     -- Queue statistics for a port
-    -- The request body is struct ofp_queue_stats_request.
-    -- The reply body is an array of struct ofp_queue_stats
     [5] = "OFPMP_QUEUE",
     -- Group counter statistics.
-    -- The request body is struct ofp_group_stats_request.
-    -- The reply is an array of struct ofp_group_stats.
     [6] = "OFPMP_GROUP",
     -- Group description.
-    -- The request body is empty.
-    -- The reply body is an array of struct ofp_group_desc_stats.
     [7] = "OFPMP_GROUP_DESC",
     -- Group features.
-    -- The request body is empty.
-    -- The reply body is struct ofp_group_features.
     [8] = "OFPMP_GROUP_FEATURES",
     -- Meter statistics.
-    -- The request body is struct ofp_meter_multipart_requests.
-    -- The reply body is an array of struct ofp_meter_stats.
     [9] = "OFPMP_METER",
     -- Meter configuration.
-    -- The request body is struct ofp_meter_multipart_requests.
-    -- The reply body is an array of struct ofp_meter_config.
     [10] = "OFPMP_METER_CONFIG",
     -- Meter features.
-    -- The request body is empty.
-    -- The reply body is struct ofp_meter_features.
     [11] = "OFPMP_METER_FEATURES",
     -- Table features.
-    -- The request body is either empty or contains an array of
-    -- struct ofp_table_features containing the controller's
-    -- desired view of the switch. If the switch is unable to
-    -- set the specified view an error is returned.
-    -- The reply body is an array of struct ofp_table_features.
     [12] = "OFPMP_TABLE_FEATURES",
     -- Port description.
-    -- The request body is empty.
-    -- The reply body is an array of struct ofp_port.
     [13] = "OFPMP_PORT_DESC",
     -- Experimenter extension.
-    -- The request and reply bodies begin with
-    -- struct ofp_experimenter_multipart_header.
-    -- The request and reply bodies are otherwise experimenter-defined.
     [0xffff] = "OFPMP_EXPERIMENTER",
 }
 
@@ -723,33 +689,50 @@ function ofp_multipart_request(buffer, pinfo, tree)
     local _flags_more = _flags_range:bitfield(0, 1)
     local _padding    = tostring(_padding_range)
 
+    offset = 0
     if ofp_multipart_types[_type] == "OFPMP_DESC" then
-        offset = 0
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_FLOW" then
+        -- The request body is struct ofp_flow_stats_request.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_AGGREGATE" then
+        -- The request body is struct ofp_aggregate_stats_request.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_TABLE" then
-        offset = 0
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_PORT_STATS" then
+        -- The request body is struct ofp_port_stats_request.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_QUEUE" then
+        -- The request body is struct ofp_queue_stats_request.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_GROUP" then
+        -- The request body is struct ofp_group_stats_request.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_GROUP_DESC" then
-        offset = 0
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_GROUP_FEATURES" then
-        offset = 0
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_METER" then
+        -- The request body is struct ofp_meter_multipart_requests.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_METER_CONFIG" then
+        -- The request body is struct ofp_meter_multipart_requests.
         offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER_FEATURES" then
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_TABLE_FEATURES" then
+        -- The request body is either empty or contains an array of
+        -- struct ofp_table_features containing the controller's
+        -- desired view of the switch. If the switch is unable to
+        -- set the specified view an error is returned.
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_PORT_DESC" then
-        offset = 0
+        -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_EXPERIMENTER" then
+        -- The request and reply bodies begin with
+        -- struct ofp_experimenter_multipart_header.
+        -- The request and reply bodies are otherwise experimenter-defined.
         offset = 0
     end
     pointer = pointer + offset
@@ -762,6 +745,10 @@ function ofp_multipart_request(buffer, pinfo, tree)
         subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
     end
     subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
+
+    if buffer:len() == pointer then
+        return
+    end
 
     if _flags_more == 1 then
         ofp_multipart_request(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
@@ -783,6 +770,57 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     local _flags_more = _flags_range:bitfield(0, 1)
     local _padding    = tostring(_padding_range)
 
+    offset = 0
+    if ofp_multipart_types[_type] == "OFPMP_DESC" then
+        -- The reply body is struct ofp_desc.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_FLOW" then
+        -- The reply body is an array of struct ofp_flow_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_AGGREGATE" then
+        -- The reply body is struct ofp_aggregate_stats_reply.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_TABLE" then
+        -- The reply body is an array of struct ofp_table_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_PORT_STATS" then
+        -- The reply body is an array of struct ofp_port_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_QUEUE" then
+        -- The reply body is an array of struct ofp_queue_stats
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP" then
+        -- The reply is an array of struct ofp_group_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP_DESC" then
+        -- The reply body is an array of struct ofp_group_desc_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_GROUP_FEATURES" then
+        -- The reply body is struct ofp_group_features.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER" then
+        -- The reply body is an array of struct ofp_meter_stats.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER_CONFIG" then
+        -- The reply body is an array of struct ofp_meter_config.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_METER_FEATURES" then
+        -- The reply body is struct ofp_meter_features.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_TABLE_FEATURES" then
+        -- The reply body is an array of struct ofp_table_features.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_PORT_DESC" then
+        -- The reply body is an array of struct ofp_port.
+        offset = 0
+    elseif ofp_multipart_types[_type] == "OFPMP_EXPERIMENTER" then
+        -- The request and reply bodies begin with
+        -- struct ofp_experimenter_multipart_header.
+        -- The request and reply bodies are otherwise experimenter-defined.
+        offset = 0
+    end
+    pointer = pointer + offset
+
     local subtree = tree:add(ofp_multipart_reply_F, buffer(), "Multipart reply")
     subtree:add(ofp_multipart_reply_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
     if ofp_multipart_reply_flags[_flags] == nil then
@@ -791,6 +829,10 @@ function ofp_multipart_reply(buffer, pinfo, tree)
         subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_reply_flags[_flags] .. ")")
     end
     subtree:add(ofp_multipart_reply_padding_F, _padding_range, _padding)
+
+    if buffer:len() == pointer then
+        return
+    end
 
     if _flags_more == 1 then
         ofp_multipart_reply(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
@@ -1099,3 +1141,4 @@ end
 --     Register of13_proto
 -- =================================================
 DissectorTable.get("tcp.port"):add(6633, of13_proto)
+DissectorTable.get("tcp.port"):add(6653, of13_proto)
