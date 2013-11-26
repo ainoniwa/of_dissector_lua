@@ -9,20 +9,20 @@ of13_proto = Proto("of13","OpenFlow 1.3")
 -- flags bits. Support true/false filter.
 local VALS_BOOL	= {[0] = "False", [1] = "True"}
 
--- A.1 OpenFlow Header
+-- 7.1 OpenFlow Header
 version_F = ProtoField.uint8("of13.version", "Version", base.HEX)
 type_F    = ProtoField.uint8("of13.type",    "Type")
 length_F  = ProtoField.uint16("of13.length", "Length")
 xid_F     = ProtoField.uint32("of13.xid",    "Transaction ID")
 
--- A.2.3.1 Flow Match Header
+-- 7.2.3.1 Flow Match Header
 match_F         = ProtoField.string("of13.match",         "Flow Match Header")
 match_type_F    = ProtoField.uint16("of13.match_type",    "Type")
 match_length_F  = ProtoField.uint16("of13.match_length",  "Length")
 match_oxm_F     = ProtoField.uint16("of13.match_oxm",     "OXM")
 match_padding_F = ProtoField.string("of13.match_padding", "Padding")
 
--- A.2.3.2 Flow Match Fileld Structure
+-- 7.2.3.2 Flow Match Fileld Structure
 oxm_F         = ProtoField.string("of13.oxm",        "Flow Match Fileld")
 oxm_class_F   = ProtoField.uint16("of13.oxm_class",  "Match class: member class ie reserved class", base.HEX)
 oxm_field_F   = ProtoField.uint8("of13.oxm_field",   "Match field within the class", base.HEX, nil, 0xfe)
@@ -31,7 +31,7 @@ oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
 -- TODO: XXX
 oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
 
--- A.2.4 Flow Instruction Structures
+-- 7.2.4 Flow Instruction Structures
 ofp_instruction_F               = ProtoField.string("of13.instruction", "Flow Instruction")
 ofp_instruction_type_F          = ProtoField.string("of13.instruction_type", "Type")
 ofp_instruction_length_F        = ProtoField.string("of13.instruction_length", "Length")
@@ -41,7 +41,7 @@ ofp_instruction_metadata_F      = ProtoField.string("of13.instruction_metadata",
 ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_mask", "Metadata mask")
 ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter", "Meter")
 
--- A.2.5 Action Structures
+-- 7.2.5 Action Structures
 ofp_action_header_F         = ProtoField.string("of13.action",         "Action")
 ofp_action_header_type_F    = ProtoField.uint16("of13.action_type",    "One of OFPAT_*")
 ofp_action_header_length_F  = ProtoField.uint16("of13.action_length",  "Length of action, including this header")
@@ -49,7 +49,7 @@ ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output p
 ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
 ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
 
--- A.3.1 Handshake
+-- 7.3.1 Handshake
 ofp_switch_features_F              = ProtoField.string("of13.feature",              "Switch features")
 ofp_switch_features_datapath_id_F  = ProtoField.uint64("of13.feature_datapath_id",  "Datapath unique ID", base.HEX)
 ofp_switch_features_n_buffers_F    = ProtoField.uint32("of13.feature_n_buffers",    "Max packets buffered at once")
@@ -67,12 +67,12 @@ ofp_switch_features_capabilities_ip_reasm_F      = ProtoField.uint32("of13.featu
 ofp_switch_features_capabilities_queue_stats_F   = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
 ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
 
--- A.3.2 Switch Configuration
+-- 7.3.2 Switch Configuration
 ofp_config_F               = ProtoField.string("of13.config",               "Switch Configuration")
 ofp_config_flags_F         = ProtoField.uint16("of13.config_flags",         "OFPC_* flags", base.HEX)
 ofp_config_miss_send_len_F = ProtoField.uint16("of13.config_miss_send_len", "Max bytes of packet")
 
--- A.3.4.1 Modify Flow Entry Message
+-- 7.3.4.1 Modify Flow Entry Message
 ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
 ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
 ofp_flow_mod_cookie_mask_F  = ProtoField.uint64("of13.flowmod_cookie_mask",  "Cookie mask", base.HEX)
@@ -93,7 +93,7 @@ ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_coun
 ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count",  "No packet count", base.HEX, VALS_BOOL, 0x0008)
 ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
 
--- A.3.5 Multipart Messages
+-- 7.3.5 Multipart Messages
 ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Reqeust")
 ofp_multipart_request_type_F    = ProtoField.uint16("of13.multipart_request_type",    "Type")
 ofp_multipart_request_flags_F   = ProtoField.uint16("of13.multipart_request_flags",   "Flags")
@@ -104,14 +104,37 @@ ofp_multipart_reply_type_F    = ProtoField.uint16("of13.multipart_reply_type",  
 ofp_multipart_reply_flags_F   = ProtoField.uint16("of13.multipart_reply_flags",   "Flags")
 ofp_multipart_reply_padding_F = ProtoField.string("of13.multipart_reply_padding", "Padding")
 
--- A.3.7 Packet-Out Message
+-- 7.3.5.6 Port Statistics
+ofp_port_stats_request_F         = ProtoField.string("of13.port_stats_request",         "Port Statistics")
+ofp_port_stats_request_port_F    = ProtoField.uint32("of13.port_stats_request_port",    "Port")
+ofp_port_stats_request_padding_F = ProtoField.string("of13.port_stats_request_padding", "Padding")
+
+ofp_port_stats_reply_F               = ProtoField.string("of13.port_stats_request",               "Port Statistics")
+ofp_port_stats_reply_port_F          = ProtoField.uint32("of13.port_stats_request_port",          "Port")
+ofp_port_stats_reply_padding_F       = ProtoField.string("of13.port_stats_request_padding",       "Padding")
+ofp_port_stats_reply_rx_packets_F    = ProtoField.uint64("of13.port_stats_request_rx_packets",    "RX packets")
+ofp_port_stats_reply_tx_packets_F    = ProtoField.uint64("of13.port_stats_request_tx_packets",    "TX packets")
+ofp_port_stats_reply_rx_bytes_F      = ProtoField.uint64("of13.port_stats_request_rx_bytes",      "RX bytes")
+ofp_port_stats_reply_tx_bytes_F      = ProtoField.uint64("of13.port_stats_request_tx_bytes",      "TX bytes")
+ofp_port_stats_reply_rx_dropped_F    = ProtoField.uint64("of13.port_stats_request_rx_dropped",    "RX dropped")
+ofp_port_stats_reply_tx_dropped_F    = ProtoField.uint64("of13.port_stats_request_tx_dropped",    "TX dropped")
+ofp_port_stats_reply_rx_errors_F     = ProtoField.uint64("of13.port_stats_request_rx_errors",     "RX error")
+ofp_port_stats_reply_tx_errors_F     = ProtoField.uint64("of13.port_stats_request_tx_errors",     "TX error")
+ofp_port_stats_reply_rx_frame_err_F  = ProtoField.uint64("of13.port_stats_request_rx_frame_err",  "RX frame error")
+ofp_port_stats_reply_rx_over_err_F   = ProtoField.uint64("of13.port_stats_request_rx_over_err",   "RX overrun error")
+ofp_port_stats_reply_rx_crc_err_F    = ProtoField.uint64("of13.port_stats_request_rx_crc_err",    "RX CRC error")
+ofp_port_stats_reply_collisions_F    = ProtoField.uint64("of13.port_stats_request_collisions",    "Collitions")
+ofp_port_stats_reply_duration_sec_F  = ProtoField.uint32("of13.port_stats_request_duration_sec",  "Port alive [sec]")
+ofp_port_stats_reply_duration_nsec_F = ProtoField.uint32("of13.port_stats_request_duration_nsec", "Port alive [nsec]")
+
+-- 7.3.7 Packet-Out Message
 packet_out_F             = ProtoField.string("of13.packet_out",            "Packet-Out Message")
 packet_out_buffer_id_F   = ProtoField.uint32("of13.packet_out_buffer_id",  "Datapath ID")
 packet_out_in_port_F     = ProtoField.uint32("of13.packet_out_in_port",    "Input port")
 packet_out_actions_len_F = ProtoField.uint16("of13.packet_out_action_len", "Size of action array")
 packet_out_padding_F     = ProtoField.string("of13.packet_out_padding",    "Padding")
 
--- A.4.1 Packet-In Message
+-- 7.4.1 Packet-In Message
 packet_in_F           = ProtoField.string("of13.packet_in",           "Packet-In Message")
 packet_in_buffer_id_F = ProtoField.uint32("of13.packet_in_buffer_id", "Datapath ID")
 packet_in_total_len_F = ProtoField.uint16("of13.packet_in_total_len", "Frame length")
@@ -124,27 +147,27 @@ packet_in_padding_F   = ProtoField.string("of13.packet_in_padding",   "Padding")
 --     Enable OpenFlow 1.3 protocol fields
 -- =================================================
 of13_proto.fields = {
-    -- A.1 OpenFlow Header
+    -- 7.1 OpenFlow Header
     version_F,
     type_F,
     length_F,
     xid_F,
 
-    -- A.2.3.1 Flow Match Header
+    -- 7.2.3.1 Flow Match Header
     match_F,
     match_type_F,
     match_length_F,
     match_oxm_F,
     match_padding_F,
 
-    -- A.2.3.2 Flow Match Fileld Structure
+    -- 7.2.3.2 Flow Match Fileld Structure
     oxm_class_F,
     oxm_field_F,
     oxm_hasmask_F,
     oxm_length_F,
     oxm_value_F,
 
-    -- A.2.4 Flow Instruction Structures
+    -- 7.2.4 Flow Instruction Structures
     ofp_instruction_F,
     ofp_instruction_type_F,
     ofp_instruction_length_F,
@@ -154,7 +177,7 @@ of13_proto.fields = {
     ofp_instruction_metadata_mask_F,
     ofp_instruction_meter_F,
 
-    -- A.2.5 Action Structures
+    -- 7.2.5 Action Structures
     ofp_action_header_F,
     ofp_action_header_type_F,
     ofp_action_header_length_F,
@@ -162,7 +185,7 @@ of13_proto.fields = {
     ofp_action_output_max_len_F,
     ofp_action_output_padding_F,
 
-    -- A.3.1 Handshake
+    -- 7.3.1 Handshake
     ofp_switch_features_F,
     ofp_switch_features_datapath_id_F,
     ofp_switch_features_n_buffers_F,
@@ -180,12 +203,12 @@ of13_proto.fields = {
     ofp_switch_features_capabilities_queue_stats_F,
     ofp_switch_features_capabilities_port_blocked_F,
 
-    -- A.3.2 Switch Configuratiion
+    -- 7.3.2 Switch Configuratiion
     ofp_config_F,
     ofp_config_flags_F,
     ofp_config_miss_send_len_F,
 
-    -- A.3.4.1 Modify Flow Entry Message
+    -- 7.3.4.1 Modify Flow Entry Message
     ofp_flow_mod_F,
     ofp_flow_mod_cookie_F,
     ofp_flow_mod_cookie_mask_F,
@@ -206,7 +229,7 @@ of13_proto.fields = {
     ofp_flow_mod_flags_no_pkt_counts_F,
     ofp_flow_mod_flags_no_byt_counts_F,
 
-    -- A.3.5 Multipart Messages
+    -- 7.3.5 Multipart Messages
     ofp_multipart_request_F,
     ofp_multipart_request_type_F,
     ofp_multipart_request_flags_F,
@@ -217,14 +240,37 @@ of13_proto.fields = {
     ofp_multipart_reply_flags_F,
     ofp_multipart_reply_padding_F,
 
-    -- A.3.7 Packet-Out Message
+    -- 7.3.5.6 Port Statistics
+    ofp_port_stats_request_F,
+    ofp_port_stats_request_port_F,
+    ofp_port_stats_request_padding_F,
+
+    ofp_port_stats_reply_F,
+    ofp_port_stats_reply_port_F,
+    ofp_port_stats_reply_padding_F,
+    ofp_port_stats_reply_rx_packets_F,
+    ofp_port_stats_reply_tx_packets_F,
+    ofp_port_stats_reply_rx_bytes_F,
+    ofp_port_stats_reply_tx_bytes_F,
+    ofp_port_stats_reply_rx_dropped_F,
+    ofp_port_stats_reply_tx_dropped_F,
+    ofp_port_stats_reply_rx_errors_F,
+    ofp_port_stats_reply_tx_errors_F,
+    ofp_port_stats_reply_rx_frame_err_F,
+    ofp_port_stats_reply_rx_over_err_F,
+    ofp_port_stats_reply_rx_crc_err_F,
+    ofp_port_stats_reply_collisions_F,
+    ofp_port_stats_reply_duration_sec_F,
+    ofp_port_stats_reply_duration_nsec_F,
+
+    -- 7.3.7 Packet-Out Message
     packet_out_F,
     packet_out_buffer_id_F,
     packet_out_in_port_F,
     packet_out_actions_len_F,
     packet_out_padding_F,
 
-    -- A.4.1 Packet-In Message
+    -- 7.4.1 Packet-In Message
     packet_in_F,
     packet_in_buffer_id_F,
     packet_in_total_len_F,
@@ -239,7 +285,7 @@ of13_proto.fields = {
 --     OpenFlow 1.3 defined value
 -- =================================================
 
--- A.1 OpenFlow Header
+-- 7.1 OpenFlow Header
 ofp_type = {
     -- Immutable messages
     [0] = "OFPT_HELLO",
@@ -333,13 +379,13 @@ ofp_port_features = {
     [15] = "OFPPF_PAUSE_ASYM", -- Asymmetric pause.
 }
 
--- A.2.3.1 Flow Match Header
+-- 7.2.3.1 Flow Match Header
 ofp_match_type_string = {
     [0] = "OFPMT_STANDARD",
     [1] = "OFPMT_OXM",
 }
 
--- A.2.4 Flow Instruction Structures
+-- 7.2.4 Flow Instruction Structures
 ofp_instruction_type = {
     [1] = "OFPIT_GOTO_TABLE",        -- Setup the next table in the lookup pipeline
     [2] = "OFPIT_WRITE_METADATA",    -- Setup the metadata field for use later in pipeline
@@ -350,7 +396,7 @@ ofp_instruction_type = {
     [0xffff] = "OFPIT_EXPERIMENTER", -- Experimenter instruction
 }
 
--- A.2.5 Action Structure
+-- 7.2.5 Action Structure
 ofp_action_type = {
     [0]      = "OFPAT_OUTPUT",       -- Output to switch port.
     [11]     = "OFPAT_COPY_TTL_OUT", -- Copy TTL "outwards" -- from next-to-outermost to outermost
@@ -376,7 +422,7 @@ ofp_controller_max_len = {
     [0xffff] = "OFPCML_NO_BUFFER", -- indicates that no buffering should be applied and the whole packet is to be sent to the controller.
 }
 
--- A.3.4.1 Modify Flow Entry Message
+-- 7.3.4.1 Modify Flow Entry Message
 ofp_flow_mod_command = {
     [0] = "OFPFC_ADD",           -- New flow.
     [1] = "OFPFC_MODIFY",        -- Modify all matching flows.
@@ -385,7 +431,7 @@ ofp_flow_mod_command = {
     [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
 }
 
--- A.3.5 Multipart Messages
+-- 7.3.5 Multipart Messages
 ofp_multipart_request_flags = {
     [0] = "Last in the next",
     [1] = "OFPMPF_REQ_MORE",
@@ -429,7 +475,7 @@ ofp_multipart_types = {
     [0xffff] = "OFPMP_EXPERIMENTER",
 }
 
--- A.3.9 Role Request Message
+-- 7.3.9 Role Request Message
 ofp_controller_role = {
     [0] = "OFPCR_ROLE_NOCHANGE", -- Don’t change current role.
     [1] = "OFPCR_ROLE_EQUAL",    -- Default role, full access.
@@ -437,7 +483,7 @@ ofp_controller_role = {
     [3] = "OFPCR_ROLE_SLAVE",    -- Read-only access.
 }
 
--- A.4.1 Packet-In Message
+-- 7.4.1 Packet-In Message
 ofp_packet_in_reason = {
     [0] = "OFPR_NO_MATCH",    -- No matching flow (table-miss flow entry).
     [1] = "OFPR_ACTION",      -- Action explicitly output to controller.
@@ -526,13 +572,13 @@ function of13_proto.dissector(buffer, pinfo, tree)
         of13_tree:add(xid_F,     _xid_range,     _xid)
 
         if ofp_type[_type] == "OFPT_HELLO" then
-            -- A.5.1 Hello
+            -- 7.5.1 Hello
             -- The OFPT_HELLO message has no body; that is, it consists only of an OpenFlow header.
             return
         elseif ofp_type[_type] == "OFPT_ERROR" then
             return
         elseif ofp_type[_type] == "OFPT_ECHO_REQUEST" then
-            -- A.5.2 Echo Request
+            -- 7.5.2 Echo Request
             --  An Echo Request message consists of an OpenFlow header
             -- plus an arbitrary-length data field. The data fieeld might be
             -- a message timestamp to check latency, various lengths to
@@ -540,14 +586,14 @@ function of13_proto.dissector(buffer, pinfo, tree)
             -- switch and controller.
             return
         elseif ofp_type[_type] == "OFPT_ECHO_REPLY" then
-            -- A.5.3 Echo Reply
+            -- 7.5.3 Echo Reply
             --  An Echo Reply message consists of an OpenFlow header plus the
             -- unmodified data field of an echo request message.
             return
         elseif ofp_type[_type] == "OFPT_EXPERIMENTER" then
             return
         elseif ofp_type[_type] == "OFPT_FEATURES_REQUEST" then
-            -- A.3.1 Handshake
+            -- 7.3.1 Handshake
             --  This message does not contain a body beyond the OpenFlow header.
             return
         elseif ofp_type[_type] == "OFPT_FEATURES_REPLY" then
@@ -689,6 +735,15 @@ function ofp_multipart_request(buffer, pinfo, tree)
     local _flags_more = _flags_range:bitfield(0, 1)
     local _padding    = tostring(_padding_range)
 
+    local subtree = tree:add(ofp_multipart_request_F, buffer(), ofp_multipart_types[_type])
+    subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
+    if ofp_multipart_request_flags[_flags] == nil then
+        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (Not defined)")
+    else
+        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
+    end
+    subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
+
     offset = 0
     if ofp_multipart_types[_type] == "OFPMP_DESC" then
         -- The request body is empty.
@@ -702,7 +757,7 @@ function ofp_multipart_request(buffer, pinfo, tree)
         -- The request body is empty.
     elseif ofp_multipart_types[_type] == "OFPMP_PORT_STATS" then
         -- The request body is struct ofp_port_stats_request.
-        offset = 0
+        offset = ofp_port_stats_request(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, subtree)
     elseif ofp_multipart_types[_type] == "OFPMP_QUEUE" then
         -- The request body is struct ofp_queue_stats_request.
         offset = 0
@@ -737,15 +792,6 @@ function ofp_multipart_request(buffer, pinfo, tree)
     end
     pointer = pointer + offset
 
-    local subtree = tree:add(ofp_multipart_request_F, buffer(0, pointer), ofp_multipart_request_flags[_flags])
-    subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
-    if ofp_multipart_request_flags[_flags] == nil then
-        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (Not defined)")
-    else
-        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
-    end
-    subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
-
     if buffer:len() == pointer then
         return
     end
@@ -770,6 +816,15 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     local _flags_more = _flags_range:bitfield(0, 1)
     local _padding    = tostring(_padding_range)
 
+    local subtree = tree:add(ofp_multipart_reply_F, buffer(), ofp_multipart_types[_type])
+    subtree:add(ofp_multipart_reply_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
+    if ofp_multipart_reply_flags[_flags] == nil then
+        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (Not defined)")
+    else
+        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_reply_flags[_flags] .. ")")
+    end
+    subtree:add(ofp_multipart_reply_padding_F, _padding_range, _padding)
+
     offset = 0
     if ofp_multipart_types[_type] == "OFPMP_DESC" then
         -- The reply body is struct ofp_desc.
@@ -785,7 +840,7 @@ function ofp_multipart_reply(buffer, pinfo, tree)
         offset = 0
     elseif ofp_multipart_types[_type] == "OFPMP_PORT_STATS" then
         -- The reply body is an array of struct ofp_port_stats.
-        offset = 0
+        offset = ofp_port_stats_reply(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, subtree)
     elseif ofp_multipart_types[_type] == "OFPMP_QUEUE" then
         -- The reply body is an array of struct ofp_queue_stats
         offset = 0
@@ -821,15 +876,6 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     end
     pointer = pointer + offset
 
-    local subtree = tree:add(ofp_multipart_reply_F, buffer(), "Multipart reply")
-    subtree:add(ofp_multipart_reply_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
-    if ofp_multipart_reply_flags[_flags] == nil then
-        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (Not defined)")
-    else
-        subtree:add(ofp_multipart_reply_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_reply_flags[_flags] .. ")")
-    end
-    subtree:add(ofp_multipart_reply_padding_F, _padding_range, _padding)
-
     if buffer:len() == pointer then
         return
     end
@@ -842,6 +888,112 @@ function ofp_multipart_reply(buffer, pinfo, tree)
         Dissector.get("of13"):call(buffer(pointer,buffer:len()-pointer):tvb(), pinfo, tree)
     end
 end
+
+function ofp_port_stats_request(buffer, pinfo, tree)
+    local _port_range    = buffer(0,4)
+    local _padding_range = buffer(4,4)
+    local pointer = 8
+
+    local _port    = _port_range:uint()
+    local _padding = tostring(_padding_range)
+
+    if ofp_port_no[_port] == nil then
+        tree:add(ofp_port_stats_request_port_F, _port_range, _port)
+    else
+        tree:add(ofp_port_stats_request_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    end
+    tree:add(ofp_port_stats_request_padding_F, _padding_range, _padding)
+    return pointer
+end
+
+function ofp_port_stats_reply(buffer, pinfo, tree)
+    local _port_range          = buffer(0,4)
+    local _padding_range       = buffer(4,4)
+    local _rx_packets_range    = buffer(8,8)
+    local _tx_packets_range    = buffer(16,8)
+    local _rx_bytes_range      = buffer(24,8)
+    local _tx_bytes_range      = buffer(32,8)
+    local _rx_dropped_range    = buffer(40,8)
+    local _tx_dropped_range    = buffer(48,8)
+    local _rx_errors_range     = buffer(56,8)
+    local _tx_errors_range     = buffer(64,8)
+    local _rx_frame_err_range  = buffer(72,8)
+    local _rx_over_err_range   = buffer(80,8)
+    local _rx_crc_err_range    = buffer(88,8)
+    local _collisions_range    = buffer(96,8)
+    local _duration_sec_range  = buffer(104,4)
+    local _duration_nsec_range = buffer(108,4)
+    local pointer = 112
+
+    local _port          = _port_range:uint()
+    local _padding       = tostring(_padding_range)
+    local _rx_packets    = _rx_packets_range:uint64()
+    local _tx_packets    = _tx_packets_range:uint64()
+    local _rx_bytes      = _rx_bytes_range:uint64()
+    local _tx_bytes      = _tx_bytes_range:uint64()
+    local _rx_dropped    = _rx_dropped_range:uint64()
+    local _tx_dropped    = _tx_dropped_range:uint64()
+    local _rx_errors     = _rx_errors_range:uint64()
+    local _tx_errors     = _tx_errors_range:uint64()
+    local _rx_frame_err  = _rx_frame_err_range:uint64()
+    local _rx_over_err   = _rx_over_err_range:uint64()
+    local _rx_crc_err    = _rx_crc_err_range:uint64()
+    local _collisions    = _collisions_range:uint64()
+    local _duration_sec  = _duration_sec_range:uint()
+    local _duration_nsec = _duration_nsec_range:uint()
+
+    if ofp_port_no[_port] == nil then
+        tree:add(ofp_port_stats_request_port_F, _port_range, _port)
+    else
+        tree:add(ofp_port_stats_request_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    end
+    tree:add(ofp_port_stats_reply_padding_F      , _padding_range      , _padding      )
+    tree:add(ofp_port_stats_reply_rx_packets_F   , _rx_packets_range   , _rx_packets   )
+    tree:add(ofp_port_stats_reply_tx_packets_F   , _tx_packets_range   , _tx_packets   )
+    tree:add(ofp_port_stats_reply_rx_bytes_F     , _rx_bytes_range     , _rx_bytes     )
+    tree:add(ofp_port_stats_reply_tx_bytes_F     , _tx_bytes_range     , _tx_bytes     )
+    tree:add(ofp_port_stats_reply_rx_dropped_F   , _rx_dropped_range   , _rx_dropped   )
+    tree:add(ofp_port_stats_reply_tx_dropped_F   , _tx_dropped_range   , _tx_dropped   )
+    tree:add(ofp_port_stats_reply_rx_errors_F    , _rx_errors_range    , _rx_errors    )
+    tree:add(ofp_port_stats_reply_tx_errors_F    , _tx_errors_range    , _tx_errors    )
+    tree:add(ofp_port_stats_reply_rx_frame_err_F , _rx_frame_err_range , _rx_frame_err )
+    tree:add(ofp_port_stats_reply_rx_over_err_F  , _rx_over_err_range  , _rx_over_err  )
+    tree:add(ofp_port_stats_reply_rx_crc_err_F   , _rx_crc_err_range   , _rx_crc_err   )
+    tree:add(ofp_port_stats_reply_collisions_F   , _collisions_range   , _collisions   )
+    tree:add(ofp_port_stats_reply_duration_sec_F , _duration_sec_range , _duration_sec )
+    tree:add(ofp_port_stats_reply_duration_nsec_F, _duration_nsec_range, _duration_nsec)
+    return pointer
+end
+
+---- Description of this OpenFlow switch.
+--[0] = "OFPMP_DESC",
+---- Individual flow statistics.
+--[1] = "OFPMP_FLOW",
+---- Aggregate flow statistics.
+--[2] = "OFPMP_AGGREGATE",
+---- Flow table statistics.
+--[3] = "OFPMP_TABLE",
+---- Port statistics.
+--[4] = "OFPMP_PORT_STATS",
+---- Queue statistics for a port
+--[5] = "OFPMP_QUEUE",
+---- Group counter statistics.
+--[6] = "OFPMP_GROUP",
+---- Group description.
+--[7] = "OFPMP_GROUP_DESC",
+---- Group features.
+--[8] = "OFPMP_GROUP_FEATURES",
+---- Meter statistics.
+--[9] = "OFPMP_METER",
+---- Meter configuration.
+--[10] = "OFPMP_METER_CONFIG",
+---- Meter features.
+--[11] = "OFPMP_METER_FEATURES",
+---- Table features.
+--[12] = "OFPMP_TABLE_FEATURES",
+---- Port description.
+--[13] = "OFPMP_PORT_DESC",
+---- Experimenter extension.
 
 function ofp_action_header(buffer, pinfo, tree)
     local _type_range   = buffer(0,2)
