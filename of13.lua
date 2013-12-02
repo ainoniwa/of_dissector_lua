@@ -671,9 +671,9 @@ function ofp_features_reply(buffer, pinfo, tree)
     local _n_buffers    = _n_buffers_range:uint()
     local _n_tables     = _n_tables_range:uint()
     local _auxiliary_id = _auxiliary_id_range:uint()
-    local _padding      = _padding_range:string()
+    local _padding      = tostring(_padding_range)
     local _capabilities = _capabilities_range:uint()
-    local _reserved     = _reserved_range:string()
+    local _reserved     = tostring(_reserved_range)
 
     local subtree = tree:add(ofp_switch_features_F, buffer())
     subtree:add(ofp_switch_features_datapath_id_F,  _datapath_id_range,  _datapath_id)
@@ -702,7 +702,7 @@ function ofp_packet_out(buffer, pinfo, tree)
     local _buffer_id   = _buffer_id_range:uint()
     local _in_port     = _in_port_range:uint()
     local _actions_len = _actions_len_range:uint()
-    local _padding     = _padding_range:string()
+    local _padding     = tostring(_padding_range)
 
     local subtree = tree:add(packet_out_F, buffer(), "Packet Out")
     subtree:add(packet_out_buffer_id_F,   _buffer_id_range,   _buffer_id)
@@ -742,7 +742,7 @@ function ofp_multipart_request(buffer, pinfo, tree)
     local _type       = _type_range:uint()
     local _flags      = _flags_range:uint()
     local _flags_more = _flags_range:bitfield(0, 1)
-    local _padding    = _padding_range:string()
+    local _padding    = tostring(_padding_range)
 
     local subtree = tree:add(ofp_multipart_request_F, buffer(), ofp_multipart_types[_type])
     subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
@@ -823,7 +823,7 @@ function ofp_multipart_reply(buffer, pinfo, tree)
     local _type       = _type_range:uint()
     local _flags      = _flags_range:uint()
     local _flags_more = _flags_range:bitfield(0, 1)
-    local _padding    = _padding_range:string()
+    local _padding    = tostring(_padding_range)
 
     local subtree = tree:add(ofp_multipart_reply_F, buffer(), ofp_multipart_types[_type])
     subtree:add(ofp_multipart_reply_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
@@ -928,7 +928,7 @@ function ofp_port_stats_request(buffer, pinfo, tree)
     local pointer = 8
 
     local _port    = _port_range:uint()
-    local _padding = _padding_range:string()
+    local _padding = tostring(_padding_range)
 
     if ofp_port_no[_port] == nil then
         tree:add(ofp_port_stats_request_port_F, _port_range, _port)
@@ -959,7 +959,7 @@ function ofp_port_stats_reply(buffer, pinfo, tree)
     local pointer = 112
 
     local _port          = _port_range:uint()
-    local _padding       = _padding_range:string()
+    local _padding       = tostring(_padding_range)
     local _rx_packets    = _rx_packets_range:uint64()
     local _tx_packets    = _tx_packets_range:uint64()
     local _rx_bytes      = _rx_bytes_range:uint64()
@@ -1058,7 +1058,7 @@ function ofp_action_output(buffer, pinfo, tree)
 
     local _port    = _port_range:uint()
     local _max_len = _max_len_range:uint()
-    local _padding = _padding_range:string()
+    local _padding = tostring(_padding_range)
 
     if ofp_port_no[_port] == nil then
         tree:add(ofp_action_output_port_F, _port_range, _port)
@@ -1100,7 +1100,7 @@ function ofp_flow_mod(buffer, pinfo, tree)
     local _out_port     = _out_port_range:uint()
     local _out_group    = _out_group_range:uint()
     local _flags        = _flags_range:uint()
-    local _padding      = _padding_range:string()
+    local _padding      = tostring(_padding_range)
 
     local subtree = tree:add(ofp_flow_mod_F, buffer(), "")
     subtree:add(ofp_flow_mod_cookie_F,       _cookie_range,       _cookie)
@@ -1158,7 +1158,7 @@ function ofp_instruction(buffer, pinfo, tree)
         pointer = pointer + 4
 
         local _table_id = _table_id_range:uint()
-        local _padding  = _padding_range:string()
+        local _padding  = tostring(_padding_range)
 
         subtree:add(ofp_instruction_table_id_F, _table_id_range, _table_id)
         subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
@@ -1169,7 +1169,7 @@ function ofp_instruction(buffer, pinfo, tree)
         local _metadata_mask_range = buffer(pointer+12,8)
         pointer = pointer + 20
 
-        local _padding        = _padding_range:string()
+        local _padding        = tostring(_padding_range)
         local _metadata       = _metadata_range:uint64()
         local _metadata_mask  = _metadata_mask_range:uint64()
 
@@ -1182,7 +1182,7 @@ function ofp_instruction(buffer, pinfo, tree)
            ofp_instruction_type[_type] == "OFPIT_CLEAR_ACTIONS" then
         local _padding_range  = buffer(pointer,4)
         pointer = pointer + 4
-        local _padding  = _padding_range:string()
+        local _padding  = tostring(_padding_range)
         subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
 
         -- Action Header dissector
@@ -1234,7 +1234,7 @@ function ofp_packet_in(buffer, pinfo, tree)
     -- Padding
     local _padding_range = buffer(pointer,2)
     pointer = pointer + 2
-    local _padding = _padding_range:string()
+    local _padding = tostring(_padding_range)
     subtree:add(packet_in_padding_F, _padding_range, _padding)
 
     -- Ethernet dissector(wireshark implements)
@@ -1260,7 +1260,7 @@ function ofp_match(buffer, pinfo, tree)
     end
 
     local _padding_range = buffer(pointer, math.ceil(_length/8)*8 - pointer)
-    local _padding = _padding_range:string()
+    local _padding = tostring(_padding_range)
     subtree:add(match_padding_F, _padding_range, _padding)
     pointer = pointer + (math.ceil(_length/8)*8 - pointer)
 
@@ -1285,7 +1285,7 @@ function ofp_oxm_field(buffer, pinfo, tree)
     subtree:add(oxm_length_F,  _length_range, _length)
 
     local _value_range = buffer(pointer, _length)
-    local _value = _value_range:string()
+    local _value = tostring(_value_range)
     pointer = pointer + _length
     subtree:add(oxm_value_F, _value_range, _value)
 
