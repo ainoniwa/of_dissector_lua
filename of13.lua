@@ -457,36 +457,21 @@ ofp_multipart_reply_flags = {
 }
 
 ofp_multipart_types = {
-    -- Description of this OpenFlow switch.
-    [0] = "OFPMP_DESC",
-    -- Individual flow statistics.
-    [1] = "OFPMP_FLOW",
-    -- Aggregate flow statistics.
-    [2] = "OFPMP_AGGREGATE",
-    -- Flow table statistics.
-    [3] = "OFPMP_TABLE",
-    -- Port statistics.
-    [4] = "OFPMP_PORT_STATS",
-    -- Queue statistics for a port
-    [5] = "OFPMP_QUEUE",
-    -- Group counter statistics.
-    [6] = "OFPMP_GROUP",
-    -- Group description.
-    [7] = "OFPMP_GROUP_DESC",
-    -- Group features.
-    [8] = "OFPMP_GROUP_FEATURES",
-    -- Meter statistics.
-    [9] = "OFPMP_METER",
-    -- Meter configuration.
-    [10] = "OFPMP_METER_CONFIG",
-    -- Meter features.
-    [11] = "OFPMP_METER_FEATURES",
-    -- Table features.
-    [12] = "OFPMP_TABLE_FEATURES",
-    -- Port description.
-    [13] = "OFPMP_PORT_DESC",
-    -- Experimenter extension.
-    [0xffff] = "OFPMP_EXPERIMENTER",
+    [0] = "OFPMP_DESC",              -- Description of this OpenFlow switch.
+    [1] = "OFPMP_FLOW",              -- Individual flow statistics.
+    [2] = "OFPMP_AGGREGATE",         -- Aggregate flow statistics.
+    [3] = "OFPMP_TABLE",             -- Flow table statistics.
+    [4] = "OFPMP_PORT_STATS",        -- Port statistics.
+    [5] = "OFPMP_QUEUE",             -- Queue statistics for a port
+    [6] = "OFPMP_GROUP",             -- Group counter statistics.
+    [7] = "OFPMP_GROUP_DESC",        -- Group description.
+    [8] = "OFPMP_GROUP_FEATURES",    -- Group features.
+    [9] = "OFPMP_METER",             -- Meter statistics.
+    [10] = "OFPMP_METER_CONFIG",     -- Meter configuration.
+    [11] = "OFPMP_METER_FEATURES",   -- Meter features.
+    [12] = "OFPMP_TABLE_FEATURES",   -- Table features.
+    [13] = "OFPMP_PORT_DESC",        -- Port description.
+    [0xffff] = "OFPMP_EXPERIMENTER", -- Experimenter extension.
 }
 
 -- 7.3.9 Role Request Message
