@@ -28,8 +28,8 @@ oxm_class_F   = ProtoField.uint16("of13.oxm_class",  "Match class: member class 
 oxm_field_F   = ProtoField.uint8("of13.oxm_field",   "Match field within the class", base.HEX, nil, 0xfe)
 oxm_hasmask_F = ProtoField.uint8("of13.oxm_hasmask", "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
 oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
--- TODO: XXX
 oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
+oxm_mask_F    = ProtoField.string("of13.oxm_mask",   "Mask")
 
 -- 7.2.4 Flow Instruction Structures
 ofp_instruction_F               = ProtoField.string("of13.instruction", "Flow Instruction")
@@ -48,6 +48,8 @@ ofp_action_header_length_F  = ProtoField.uint16("of13.action_length",  "Length o
 ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port", base.HEX)
 ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
 ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
+ofp_action_nw_ttl_nw_ttl_F  = ProtoField.uint8("of13.nw_ttl",  "IP TTL")
+ofp_action_nw_ttl_padding_F = ProtoField.string("of13.nw_ttl_padding", "Pad to 64 bits")
 
 -- 7.3.1 Handshake
 ofp_switch_features_F              = ProtoField.string("of13.feature",              "Switch features")
@@ -188,6 +190,8 @@ of13_proto.fields = {
     ofp_action_output_port_F,
     ofp_action_output_max_len_F,
     ofp_action_output_padding_F,
+    ofp_action_nw_ttl_nw_ttl_F,
+    ofp_action_nw_ttl_padding_F,
 
     -- 7.3.1 Handshake
     ofp_switch_features_F,
@@ -1012,10 +1016,9 @@ function ofp_action_header(buffer, pinfo, tree)
 
     if ofp_action_type[_type] == "OFPAT_OUTPUT" then
         offset = ofp_action_output(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
-    elseif ofp_action_type[_type] == "OFPAT_COPY_TTL_OUT" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_COPY_TTL_IN" then
-        offset = 0
+    elseif ofp_action_type[_type] == "OFPAT_COPY_TTL_OUT" or
+           ofp_action_type[_type] == "OFPAT_COPY_TTL_IN" then
+        offset = ofp_action_nw_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_SET_MPLS_TTL" then
         offset = 0
     elseif ofp_action_type[_type] == "OFPAT_DEC_MPLS_TTL" then
@@ -1032,10 +1035,9 @@ function ofp_action_header(buffer, pinfo, tree)
         offset = 0
     elseif ofp_action_type[_type] == "OFPAT_GROUP" then
         offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_SET_NW_TTL" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_DEC_NW_TTL" then
-        offset = 0
+    elseif ofp_action_type[_type] == "OFPAT_SET_NW_TTL" or
+           ofp_action_type[_type] == "OFPAT_DEC_NW_TTL" then
+        offset = ofp_action_nw_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_SET_FIELD" then
         offset = 0
     elseif ofp_action_type[_type] == "OFPAT_PUSH_PBB" then
@@ -1071,6 +1073,20 @@ function ofp_action_output(buffer, pinfo, tree)
         tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
     end
     tree:add(ofp_action_output_padding_F, _padding_range, _padding)
+    return pointer
+end
+
+function ofp_action_nw_ttl(buffer, pinfo, tree)
+    local _nw_ttl_range  = buffer(0,1)
+    local _padding_range = buffer(1,3)
+    local pointer = 4
+
+    local _nw_ttl  = _nw_ttl_range:uint()
+    local _padding = tostring(_padding_range)
+
+    tree:add(ofp_action_nw_ttl_nw_ttl_F, _nw_ttl_range, _nw_ttl)
+    tree:add(ofp_action_nw_ttl_padding_F, _padding_range, _padding)
+
     return pointer
 end
 
@@ -1186,8 +1202,10 @@ function ofp_instruction(buffer, pinfo, tree)
         subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
 
         -- Action Header dissector
-        offset = ofp_action_header(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
-        pointer = pointer + offset
+        while buffer:len() > pointer do
+            offset = ofp_action_header(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+            pointer = pointer + offset
+        end
 
     elseif ofp_instruction_type[_type] == "OFPIT_METER" then
         local _meter_range  = buffer(pointer,4)
@@ -1199,10 +1217,6 @@ function ofp_instruction(buffer, pinfo, tree)
         -- XXX
     end
 
-    if buffer:len() <= pointer then
-        return
-    end
-    ofp_instruction(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
 end
 
 function ofp_packet_in(buffer, pinfo, tree)
