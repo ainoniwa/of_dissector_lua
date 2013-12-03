@@ -29,7 +29,7 @@ oxm_field_F   = ProtoField.uint8("of13.oxm_field",   "Match field within the cla
 oxm_hasmask_F = ProtoField.uint8("of13.oxm_hasmask", "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
 oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
 oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
-oxm_mask_F    = ProtoField.string("of13.oxm_mask",   "Mask")
+oxm_mask_F    = ProtoField.string("of13.oxm_mask",   "Mask ")
 
 -- 7.2.4 Flow Instruction Structures
 ofp_instruction_F               = ProtoField.string("of13.instruction", "Flow Instruction")
@@ -1174,9 +1174,9 @@ function ofp_instruction(buffer, pinfo, tree)
         local _metadata_mask_range = buffer(pointer+12,8)
         pointer = pointer + 20
 
-        local _padding        = tostring(_padding_range)
-        local _metadata       = _metadata_range:uint64()
-        local _metadata_mask  = _metadata_mask_range:uint64()
+        local _padding       = tostring(_padding_range)
+        local _metadata      = _metadata_range:uint64()
+        local _metadata_mask = _metadata_mask_range:uint64()
 
         subtree:add(ofp_instruction_padding_F,  _padding_range,  _padding)
         subtree:add(ofp_instruction_metadata_F, _metadata_range, _metadata)
@@ -1277,14 +1277,15 @@ function ofp_oxm_field(buffer, pinfo, tree)
     local pointer = 4
 
     local _class   = _class_range:uint()
+    local _fh      = _fh_range:uint()
     local _field   = _fh_range:bitfield(0, 7)
     local _hasmask = _fh_range:bitfield(7, 1)
     local _length  = _length_range:uint()
 
     local subtree = tree:add(oxm_F, buffer(0, pointer + _length), "Flow Match Field Structure")
     subtree:add(oxm_class_F,   _class_range,  _class):append_text(" (" .. ofp_oxm_field_string[_class] .. ")")
-    subtree:add(oxm_field_F,   _fh_range,     _field):append_text(" (" .. oxm_ofb_match_fields[_field][1] .. ")")
-    subtree:add(oxm_hasmask_F, _fh_range,     _hasmask)
+    subtree:add(oxm_field_F,   _fh_range,     _fh):append_text(" (" .. oxm_ofb_match_fields[_field][1] .. ")")
+    subtree:add(oxm_hasmask_F, _fh_range,     _fh)
     subtree:add(oxm_length_F,  _length_range, _length)
 
     local _value_range = buffer(pointer, _length)
@@ -1295,73 +1296,140 @@ function ofp_oxm_field(buffer, pinfo, tree)
     end
 
     if ofp_oxm_field_string[_class] == "OFPXMC_OPENFLOW_BASIC" then
-        if oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PORT" or
-           oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PHY_PORT" then
-            subtree:add(oxm_value_F, _value_range, _value_range:uint())
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_METADATA" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_DST" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_SRC" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_TYPE" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_VID" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_PCP" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_DSCP" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_ECN" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_PROTO" then
-            subtree:add(oxm_value_F, _value_range, _value_range:uint())
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_SRC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_DST" then
-            if _hasmask == 1 then
+        if _hasmask == 1 then
+            if oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PORT" or
+               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PHY_PORT" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+                subtree:add(oxm_value_F, _mask_range, mask_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_METADATA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_SRC" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range:ether()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_TYPE" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_VID" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_PCP" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_DSCP" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_ECN" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_PROTO" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+                subtree:add(oxm_value_F, _mask_range, mask_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_DST" then
                 subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
-                subtree:add(oxm_mask_F, _mask_range, tostring(_mask_range:ipv4()))
+                subtree:add(oxm_mask_F,  _mask_range,  tostring(_mask_range:ipv4()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_TYPE" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_CODE" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+                subtree:add(oxm_value_F, _mask_range, mask_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_OP" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SPA" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_TPA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
+                subtree:add(oxm_mask_F,  _mask_range,  tostring(_mask_range:ipv4()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SHA" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_THA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range:ether()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_FLABEL" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_TYPE" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_CODE" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+                subtree:add(oxm_value_F, _mask_range, mask_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TARGET" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_SLL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TLL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_LABEL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_TC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFP_MPLS_BOS" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_PBB_ISID" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TUNNEL_ID" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+                subtree:add(oxm_value_F, _mask_range, mask_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_EXTHDR" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
             else
-                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+                subtree:add(oxm_value_F, _mask_range, tostring(_mask_range))
             end
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_SRC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_DST" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_SRC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_DST" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_SRC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_DST" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_TYPE" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_CODE" then
-            subtree:add(oxm_value_F, _value_range, _value_range:uint())
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_OP" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SPA" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_TPA" then
-            if _hasmask == 1 then
-                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
-                subtree:add(oxm_mask_F, _mask_range, tostring(_mask_range:ipv4()))
-            else
-                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
-            end
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SHA" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_THA" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_SRC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_DST" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_FLABEL" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_TYPE" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_CODE" then
-            subtree:add(oxm_value_F, _value_range, _value_range:uint())
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TARGET" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_SLL" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TLL" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_LABEL" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_TC" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFP_MPLS_BOS" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_PBB_ISID" or
-               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TUNNEL_ID" then
-            subtree:add(oxm_value_F, _value_range, _value_range:uint())
-        elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_EXTHDR" then
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
         else
-            subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            if oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PORT" or
+               oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IN_PHY_PORT" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_METADATA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_SRC" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ETH_TYPE" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_VID" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_VLAN_PCP" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_DSCP" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_ECN" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IP_PROTO" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV4_DST" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TCP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_UDP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_SCTP_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_TYPE" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV4_CODE" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_OP" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SPA" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_TPA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ipv4()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_SHA" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ARP_THA" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range:ether()))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_SRC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_DST" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_FLABEL" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_TYPE" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_ICMPV6_CODE" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TARGET" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_SLL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_ND_TLL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_LABEL" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_MPLS_TC" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFP_MPLS_BOS" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_PBB_ISID" or
+                   oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_TUNNEL_ID" then
+                subtree:add(oxm_value_F, _value_range, _value_range:uint())
+            elseif oxm_ofb_match_fields[_field][1] == "OFPXMT_OFB_IPV6_EXTHDR" then
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            else
+                subtree:add(oxm_value_F, _value_range, tostring(_value_range))
+            end
         end
     else
         if _hasmask == 1 then
