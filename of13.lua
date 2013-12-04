@@ -42,14 +42,24 @@ ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_m
 ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter", "Meter")
 
 -- 7.2.5 Action Structures
-ofp_action_header_F         = ProtoField.string("of13.action",         "Action")
-ofp_action_header_type_F    = ProtoField.uint16("of13.action_type",    "One of OFPAT_*")
-ofp_action_header_length_F  = ProtoField.uint16("of13.action_length",  "Length of action, including this header")
-ofp_action_output_port_F    = ProtoField.uint32("of13.output_port",    "Output port", base.HEX)
-ofp_action_output_max_len_F = ProtoField.uint16("of13.output_maxlen",  "Max length to send to controller")
-ofp_action_output_padding_F = ProtoField.string("of13.output_padding", "Pad to 64 bits")
-ofp_action_nw_ttl_nw_ttl_F  = ProtoField.uint8("of13.nw_ttl",  "IP TTL")
-ofp_action_nw_ttl_padding_F = ProtoField.string("of13.nw_ttl_padding", "Pad to 64 bits")
+ofp_action_header_F             = ProtoField.string("of13.action",         "Action")
+ofp_action_header_type_F        = ProtoField.uint16("of13.action_type",    "One of OFPAT_*")
+ofp_action_header_length_F      = ProtoField.uint16("of13.action_length",  "Length of action, including this header")
+ofp_action_header_padding_F     = ProtoField.string("of13.action_padding", "Pad to 64 bits")
+ofp_action_output_port_F        = ProtoField.uint32("of13.action_output_port",    "Output port")
+ofp_action_output_max_len_F     = ProtoField.uint16("of13.action_output_maxlen",  "Max length to send to controller")
+ofp_action_output_padding_F     = ProtoField.string("of13.action_output_padding", "Pad to 64 bits")
+ofp_action_group_group_id_F     = ProtoField.uint32("of13.action_group_id",    "Group ID")
+ofp_action_group_queue_id_F     = ProtoField.uint32("of13.action_queue_id",    "Queue ID")
+ofp_action_mpls_ttl_mpls_ttl_F  = ProtoField.uint32("of13.action_mpls_ttl",    "MPLS TTL")
+ofp_action_mpls_ttl_padding_F   = ProtoField.string("of13.action_mpls_padding",    "Padding")
+ofp_action_nw_ttl_nw_ttl_F      = ProtoField.uint8("of13.nw_ttl",  "IP TTL")
+ofp_action_nw_ttl_padding_F     = ProtoField.string("of13.nw_ttl_padding", "Pad to 64 bits")
+ofp_action_push_ethertype_F     = ProtoField.uint16("of13.action_push_type",    "EtherType", base.HEX)
+ofp_action_push_padding_F       = ProtoField.string("of13.action_push_padding",    "Padding")
+ofp_action_pop_mpls_ethertype_F = ProtoField.uint16("of13.action_pop_mpls_type",    "EtherType", base.HEX)
+ofp_action_pop_mpls_padding_F   = ProtoField.string("of13.action_pop_mpls_padding",    "Padding")
+ofp_action_experimenter_F       = ProtoField.uint32("of13.action_expetimenter",    "Experimenter")
 
 -- 7.3.1 Handshake
 ofp_switch_features_F              = ProtoField.string("of13.feature",              "Switch features")
@@ -61,13 +71,13 @@ ofp_switch_features_padding_F      = ProtoField.string("of13.feature_padding",  
 ofp_switch_features_capabilities_F = ProtoField.uint32("of13.feature_capabilities", "Bitmap of support ofp_capabilities", base.HEX)
 ofp_switch_features_reserved_F     = ProtoField.string("of13.feature_reserved",     "reserved")
 
-ofp_switch_features_capabilities_flow_stats_F    = ProtoField.uint32("of13.feature_cap_flow",         "Flow statistics", base.HEX, VALS_BOOL, 0x00000001)
-ofp_switch_features_capabilities_table_stats_F   = ProtoField.uint32("of13.feature_cap_table",        "Table statistics", base.HEX, VALS_BOOL, 0x00000002)
-ofp_switch_features_capabilities_port_stats_F    = ProtoField.uint32("of13.feature_cap_port",         "Port statistics", base.HEX, VALS_BOOL, 0x00000004)
-ofp_switch_features_capabilities_group_stats_F   = ProtoField.uint32("of13.feature_cap_group",        "Group statistics", base.HEX, VALS_BOOL, 0x00000008)
-ofp_switch_features_capabilities_ip_reasm_F      = ProtoField.uint32("of13.feature_cap_ip_reasm",     "Can reassemble IP fragments", base.HEX, VALS_BOOL, 0x00000020)
-ofp_switch_features_capabilities_queue_stats_F   = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
-ofp_switch_features_capabilities_port_blocked_F  = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
+ofp_switch_features_capabilities_flow_stats_F   = ProtoField.uint32("of13.feature_cap_flow",         "Flow statistics", base.HEX, VALS_BOOL, 0x00000001)
+ofp_switch_features_capabilities_table_stats_F  = ProtoField.uint32("of13.feature_cap_table",        "Table statistics", base.HEX, VALS_BOOL, 0x00000002)
+ofp_switch_features_capabilities_port_stats_F   = ProtoField.uint32("of13.feature_cap_port",         "Port statistics", base.HEX, VALS_BOOL, 0x00000004)
+ofp_switch_features_capabilities_group_stats_F  = ProtoField.uint32("of13.feature_cap_group",        "Group statistics", base.HEX, VALS_BOOL, 0x00000008)
+ofp_switch_features_capabilities_ip_reasm_F     = ProtoField.uint32("of13.feature_cap_ip_reasm",     "Can reassemble IP fragments", base.HEX, VALS_BOOL, 0x00000020)
+ofp_switch_features_capabilities_queue_stats_F  = ProtoField.uint32("of13.feature_cap_queue",        "Queue statistics", base.HEX, VALS_BOOL, 0x00000040)
+ofp_switch_features_capabilities_port_blocked_F = ProtoField.uint32("of13.feature_cap_port_blocked", "Switch will block looping ports", base.HEX, VALS_BOOL, 0x00000100)
 
 -- 7.3.2 Switch Configuration
 ofp_config_F               = ProtoField.string("of13.config",               "Switch Configuration")
@@ -188,11 +198,21 @@ of13_proto.fields = {
     ofp_action_header_F,
     ofp_action_header_type_F,
     ofp_action_header_length_F,
+    ofp_action_header_padding_F,
     ofp_action_output_port_F,
     ofp_action_output_max_len_F,
     ofp_action_output_padding_F,
+    ofp_action_group_group_id_F,
+    ofp_action_group_queue_id_F,
+    ofp_action_mpls_ttl_mpls_ttl_F,
+    ofp_action_mpls_ttl_padding_F,
     ofp_action_nw_ttl_nw_ttl_F,
     ofp_action_nw_ttl_padding_F,
+    ofp_action_push_ethertype_F,
+    ofp_action_push_padding_F,
+    ofp_action_pop_mpls_ethertype_F,
+    ofp_action_pop_mpls_padding_F,
+    ofp_action_experimenter_F,
 
     -- 7.3.1 Handshake
     ofp_switch_features_F,
@@ -738,11 +758,13 @@ function ofp_multipart_request(buffer, pinfo, tree)
     local _padding    = tostring(_padding_range)
 
     local subtree = tree:add(ofp_multipart_request_F, buffer(), ofp_multipart_types[_type])
-    subtree:add(ofp_multipart_request_type_F, _type_range, _type):append_text(" (" .. ofp_multipart_types[_type] .. ")")
-    if ofp_multipart_request_flags[_flags] == nil then
-        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (Not defined)")
-    else
-        subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags):append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
+    local _type_F = subtree:add(ofp_multipart_request_type_F, _type_range, _type)
+    if not ofp_multipart_types[_type] == nil then
+        _type_F:append_text(" (" .. ofp_multipart_types[_type] .. ")")
+    end
+    local _flags_F = subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags)
+    if not ofp_multipart_request_flags[_flags] == nil then
+        _flags_F:append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
     end
     subtree:add(ofp_multipart_request_padding_F, _padding_range, _padding)
 
@@ -923,10 +945,9 @@ function ofp_port_stats_request(buffer, pinfo, tree)
     local _port    = _port_range:uint()
     local _padding = tostring(_padding_range)
 
-    if ofp_port_no[_port] == nil then
-        tree:add(ofp_port_stats_request_port_F, _port_range, _port)
-    else
-        tree:add(ofp_port_stats_request_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    local _port_F = tree:add(ofp_port_stats_request_port_F, _port_range, _port)
+    if not ofp_port_no[_port] == nil then
+        _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
     tree:add(ofp_port_stats_request_padding_F, _padding_range, _padding)
     return pointer
@@ -968,10 +989,9 @@ function ofp_port_stats_reply(buffer, pinfo, tree)
     local _duration_sec  = _duration_sec_range:uint()
     local _duration_nsec = _duration_nsec_range:uint()
 
-    if ofp_port_no[_port] == nil then
-        tree:add(ofp_port_stats_request_port_F, _port_range, _port)
-    else
-        tree:add(ofp_port_stats_request_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    local _port_F = tree:add(ofp_port_stats_request_port_F, _port_range, _port)
+    if not ofp_port_no[_port] == nil then
+        _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
     tree:add(ofp_port_stats_reply_padding_F      , _padding_range      , _padding      )
     tree:add(ofp_port_stats_reply_rx_packets_F   , _rx_packets_range   , _rx_packets   )
@@ -1006,35 +1026,41 @@ function ofp_action_header(buffer, pinfo, tree)
     if ofp_action_type[_type] == "OFPAT_OUTPUT" then
         offset = ofp_action_output(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_COPY_TTL_OUT" or
-           ofp_action_type[_type] == "OFPAT_COPY_TTL_IN" then
-        offset = ofp_action_nw_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+           ofp_action_type[_type] == "OFPAT_COPY_TTL_IN" or
+           ofp_action_type[_type] == "OFPAT_DEC_MPLS_TTL" or
+           ofp_action_type[_type] == "OFPAT_POP_VLAN" or
+           ofp_action_type[_type] == "OFPAT_DEC_NW_TTL" or
+           ofp_action_type[_type] == "OFPAT_POP_PBB" then
+        offset = 4
+        local _padding_range = buffer(pointer,4)
+        local _padding = tostring(_padding_range)
+        subtree:add(ofp_action_header_padding_F, _padding_range, _padding)
+        offset = 4
     elseif ofp_action_type[_type] == "OFPAT_SET_MPLS_TTL" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_DEC_MPLS_TTL" then
-        offset = 0
+        offset = ofp_action_mpls_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_PUSH_VLAN" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_POP_VLAN" then
-        offset = 0
+        offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_PUSH_MPLS" then
-        offset = 0
+        offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_POP_MPLS" then
-        offset = 0
+        offset = ofp_action_pop_mpls(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_SET_QUEUE" then
-        offset = 0
+        offset = ofp_action_set_queue(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_GROUP" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_SET_NW_TTL" or
-           ofp_action_type[_type] == "OFPAT_DEC_NW_TTL" then
+        offset = ofp_action_group(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+    elseif ofp_action_type[_type] == "OFPAT_SET_NW_TTL" then
         offset = ofp_action_nw_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_SET_FIELD" then
-        offset = 0
+        offset = ofp_oxm_field(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+        pointer = pointer + offset
+        local _padding_range = buffer(pointer, math.ceil(_length/8)*8 - pointer)
+        local _padding = tostring(_padding_range)
+        subtree:add(ofp_action_header_padding_F, _padding_range, _padding)
+        offset = (math.ceil(_length/8)*8) - pointer
     elseif ofp_action_type[_type] == "OFPAT_PUSH_PBB" then
-        offset = 0
-    elseif ofp_action_type[_type] == "OFPAT_POP_PBB" then
-        offset = 0
+        offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_EXPERIMENTER" then
-        offset = 0
+        offset = ofp_action_experimenter(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     end
 
     pointer = pointer + offset
@@ -1051,17 +1077,54 @@ function ofp_action_output(buffer, pinfo, tree)
     local _max_len = _max_len_range:uint()
     local _padding = tostring(_padding_range)
 
-    if ofp_port_no[_port] == nil then
-        tree:add(ofp_action_output_port_F, _port_range, _port)
-    else
-        tree:add(ofp_action_output_port_F, _port_range, _port):append_text(" (" .. ofp_port_no[_port] .. ")")
+    local _port_F = tree:add(ofp_action_output_port_F, _port_range, _port)
+    if not ofp_port_no[_port] == nil then
+        _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
-    if ofp_controller_max_len[_max_len] == nil then
-        tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len)
-    else
-        tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len):append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
+
+    local _max_len_F = tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len)
+    if not ofp_controller_max_len[_max_len] == nil then
+        _max_len_F:append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
     end
+
     tree:add(ofp_action_output_padding_F, _padding_range, _padding)
+
+    return pointer
+end
+
+function ofp_action_group(buffer, pinfo, tree)
+    local _group_id_range = buffer(0,4)
+    local pointer = 4
+
+    local _group_id = _group_id_range:uint()
+
+    tree:add(ofp_action_group_group_id_F, _group_id_range, _group_id)
+
+    return pointer
+end
+
+function ofp_action_set_queue(buffer, pinfo, tree)
+    local _queue_id_range = buffer(0,4)
+    local pointer = 4
+
+    local _queue_id = _queue_id_range:uint()
+
+    tree:add(ofp_action_group_queue_id_F, _queue_id_range, _queue_id)
+
+    return pointer
+end
+
+function ofp_action_mpls_ttl(buffer, pinfo, tree)
+    local _mpls_ttl_range  = buffer(0,1)
+    local _padding_range   = buffer(1,3)
+    local pointer = 4
+
+    local _mpls_ttl = _mpls_ttl_range:uint()
+    local _padding  = tostring(_padding_range)
+
+    tree:add(ofp_action_mpls_ttl_mpls_ttl_F, _mpls_ttl_range, _mpls_ttl)
+    tree:add(ofp_action_mpls_ttl_padding_F,  _padding_range,  _padding)
+
     return pointer
 end
 
@@ -1073,8 +1136,47 @@ function ofp_action_nw_ttl(buffer, pinfo, tree)
     local _nw_ttl  = _nw_ttl_range:uint()
     local _padding = tostring(_padding_range)
 
-    tree:add(ofp_action_nw_ttl_nw_ttl_F, _nw_ttl_range, _nw_ttl)
+    tree:add(ofp_action_nw_ttl_nw_ttl_F,  _nw_ttl_range,  _nw_ttl)
     tree:add(ofp_action_nw_ttl_padding_F, _padding_range, _padding)
+
+    return pointer
+end
+
+function ofp_action_push(buffer, pinfo, tree)
+    local _ethertype_range = buffer(0,2)
+    local _padding_range   = buffer(2,2)
+    local pointer = 4
+
+    local _ethertype = _ethertype_range:uint()
+    local _padding   = tostring(_padding_range)
+
+    tree:add(ofp_action_push_ethertype_F, _ethertype_range, _ethertype)
+    tree:add(ofp_action_push_padding_F,   _padding_range,   _padding)
+
+    return pointer
+end
+
+function ofp_action_pop_mpls(buffer, pinfo, tree)
+    local _ethertype_range = buffer(0,2)
+    local _padding_range   = buffer(2,2)
+    local pointer = 4
+
+    local _ethertype = _ethertype_range:uint()
+    local _padding   = tostring(_padding_range)
+
+    tree:add(ofp_action_pop_mpls_ethertype_F, _ethertype_range, _ethertype)
+    tree:add(ofp_action_pop_mpls_padding_F,   _padding_range,   _padding)
+
+    return pointer
+end
+
+function ofp_action_experimenter(buffer, pinfo, tree)
+    local _experimenter_range = buffer(0,4)
+    local pointer = 4
+
+    local _experimenter = _experimenter_range:uint()
+
+    tree:add(ofp_action_experimenter_F, _experimenter_range, _experimenter)
 
     return pointer
 end
@@ -1203,7 +1305,7 @@ function ofp_instruction(buffer, pinfo, tree)
         subtree:add(ofp_instruction_meter_F,  _meter_range,  _meter)
 
     elseif ofp_instruction_type[_type] == "OFPIT_EXPERIMENTER" then
-        -- XXX
+        Dissector.get("data"):call(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     end
 
 end
