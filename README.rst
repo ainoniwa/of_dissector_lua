@@ -10,10 +10,10 @@ Usage
 
 Windows
 -------
-#. Commentout the "disable_lua=true" in "%WIRESHARK%\init.lua". (Probably configured)
-#. of13.lua copy to under the "%WIRESHARK%\plugins\<version>" or "%APPDATA%\Wireshark\plugins".
+#. Commentout the "disable_lua=true" in "%WIRESHARK%\\init.lua". (Probably configured)
+#. of13.lua copy to under the "%WIRESHARK%\\plugins\\<version>" or "%APPDATA%\\Wireshark\\plugins".
 
-e.g.: C:\Program Files\Wireshark\plugins\1.10.3\of13.lua
+e.g.: C:\\Program Files\\Wireshark\\plugins\\1.10.3\\of13.lua
 
 
 Unix/Linux
