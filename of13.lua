@@ -231,6 +231,20 @@ end
 
 -- 7.2.1 Port Structures
 -- -------------------------------------------------
+ofp_port_port_no_F    = ProtoField.uint32("of13.port_port_no",    "Port")
+ofp_port_padding1_F   = ProtoField.uint32("of13.port_padding1",   "Padding")
+ofp_port_hw_addr_F    = ProtoField.string("of13.port_hw_addr",    "HW Addr")
+ofp_port_padding2_F   = ProtoField.string("of13.port_padding2",   "Padding")
+ofp_port_name_F       = ProtoField.string("of13.port_name",       "Name")
+ofp_port_config_F     = ProtoField.uint32("of13.port_config",     "Config")
+ofp_port_state_F      = ProtoField.uint32("of13.port_state",      "State")
+ofp_port_curr_F       = ProtoField.uint32("of13.port_curr",       "Current features")
+ofp_port_advertised_F = ProtoField.uint32("of13.port_advertised", "Advertize features")
+ofp_port_supported_F  = ProtoField.uint32("of13.port_supported",  "Supported features")
+ofp_port_peer_F       = ProtoField.uint32("of13.port_peer",       "Advertize features by peer")
+ofp_port_curr_speed_F = ProtoField.uint32("of13.port_curr_speed", "Port bitrate [kbps]")
+ofp_port_max_speed_F  = ProtoField.uint32("of13.port_max_speed",  "Max bitrate [kbps]")
+
 function ofp_port(buffer, pinfo, tree)
     local _port_no_range    = buffer(0,4)
     local _padding1_range   = buffer(4,4)
@@ -280,6 +294,11 @@ end
 
 -- 7.2.2 Queue Structures
 -- -------------------------------------------------
+ofp_packet_queue_queue_id_F = ProtoField.uint32("of13.packet_queue_queue_id",  "Queue ID")
+ofp_packet_queue_port_F     = ProtoField.uint32("of13.packet_queue_port",  "Port")
+ofp_packet_queue_len_F      = ProtoField.uint16("of13.packet_queue_len",  "Length")
+ofp_packet_queue_pad_F      = ProtoField.string("of13.packet_queue_pad",  "Padding")
+
 ofp_queue_properties = {
     [1] = "OFPQT_MIN_RATE",
     [2] = "OFPQT_MAX_RATE",
@@ -352,7 +371,7 @@ ofp_match_ofp_oxm_F       = ProtoField.uint16("of13.match_oxm",     "OXM")
 ofp_match_padding_F       = ProtoField.string("of13.match_padding", "Padding")
 ofp_oxm_F                 = ProtoField.string("of13.oxm",           "Flow Match Fileld")
 ofp_oxm_class_F           = ProtoField.uint16("of13.oxm_class",     "Match class: member class ie reserved class", base.HEX)
-ofp_ofp_ofp_oxm_hasmask_F = ProtoField.uint8("of13.oxm_field",      "Match field within the class", base.HEX, nil, 0xfe)
+ofp_oxm_field_F           = ProtoField.uint8("of13.oxm_field",      "Match field within the class", base.HEX, nil, 0xfe)
 ofp_oxm_hasmask_F         = ProtoField.uint8("of13.oxm_hasmask",    "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
 ofp_oxm_length_F          = ProtoField.uint8("of13.oxm_length",     "Length of OXM payload")
 ofp_oxm_value_F           = ProtoField.string("of13.oxm_value",     "Value")
@@ -456,7 +475,7 @@ function ofp_oxm_field(buffer, pinfo, tree)
 
     local subtree = tree:add(ofp_oxm_F, buffer(0, pointer + _length), "Flow Match Field Structure")
     subtree:add(ofp_oxm_class_F,   _class_range,  _class):append_text(" (" .. ofp_oxm_field_string[_class] .. ")")
-    subtree:add(ofp_ofp_ofp_oxm_hasmask_F,   _fh_range,     _fh):append_text(" (" .. oxm_ofb_match_fields[_field][1] .. ")")
+    subtree:add(ofp_oxm_field_F,   _fh_range,     _fh):append_text(" (" .. oxm_ofb_match_fields[_field][1] .. ")")
     subtree:add(ofp_oxm_hasmask_F, _fh_range,     _fh)
     subtree:add(ofp_oxm_length_F,  _length_range, _length)
 
@@ -660,16 +679,6 @@ ofp_instruction_padding_F       = ProtoField.string("of13.instruction_padding", 
 ofp_instruction_metadata_F      = ProtoField.string("of13.instruction_metadata",      "Metadata")
 ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_mask", "Metadata mask")
 ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter",         "Meter")
-
--- 7.3.4.1 Modify Flow Entry Message
--- -------------------------------------------------
-ofp_flow_mod_command = {
-    [0] = "OFPFC_ADD",           -- New flow.
-    [1] = "OFPFC_MODIFY",        -- Modify all matching flows.
-    [2] = "OFPFC_MODIFY_STRICT", -- Modify entry strictly matching wildcards and priority.
-    [3] = "OFPFC_DELETE",        -- Delete all matching flows.
-    [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
-}
 
 -- 7.2.4 Flow Instruction Structures
 -- -------------------------------------------------
@@ -1113,6 +1122,14 @@ ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_over
 ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count",   "Reset count", base.HEX, VALS_BOOL, 0x0004)
 ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count",  "No packet count", base.HEX, VALS_BOOL, 0x0008)
 ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
+
+ofp_flow_mod_command = {
+    [0] = "OFPFC_ADD",           -- New flow.
+    [1] = "OFPFC_MODIFY",        -- Modify all matching flows.
+    [2] = "OFPFC_MODIFY_STRICT", -- Modify entry strictly matching wildcards and priority.
+    [3] = "OFPFC_DELETE",        -- Delete all matching flows.
+    [4] = "OFPFC_DELETE_STRICT", -- Delete entry strictly matching wildcards and priority.
+}
 
 function ofp_flow_mod(buffer, pinfo, tree)
     local _cookie_range       = buffer(0,8)
@@ -2293,16 +2310,35 @@ of13_proto.fields = {
     ofp_header_length_F,
     ofp_header_xid_F,
 
-    -- 7.2.3.1 Flow Match Header
+    -- 7.2.1 Port Structures
+    ofp_port_port_no_F,
+    ofp_port_padding1_F,
+    ofp_port_hw_addr_F,
+    ofp_port_padding2_F,
+    ofp_port_name_F,
+    ofp_port_config_F,
+    ofp_port_state_F,
+    ofp_port_curr_F,
+    ofp_port_advertised_F,
+    ofp_port_supported_F,
+    ofp_port_peer_F,
+    ofp_port_curr_speed_F,
+    ofp_port_max_speed_F,
+
+    -- 7.2.2 Queue Structures
+    ofp_packet_queue_queue_id_F,
+    ofp_packet_queue_port_F,
+    ofp_packet_queue_len_F,
+    ofp_packet_queue_pad_F,
+
+    -- 7.2.3 Flow Match Structures
     ofp_match_F,
     ofp_match_type_F,
     ofp_match_length_F,
     ofp_match_ofp_oxm_F,
     ofp_match_padding_F,
-
-    -- 7.2.3.2 Flow Match Fileld Structure
     ofp_oxm_class_F,
-    ofp_ofp_ofp_oxm_hasmask_F,
+    ofp_oxm_field_F,
     ofp_oxm_hasmask_F,
     ofp_oxm_length_F,
     ofp_oxm_value_F,
@@ -2361,7 +2397,7 @@ of13_proto.fields = {
     ofp_config_flags_F,
     ofp_config_miss_send_len_F,
 
-    -- 7.3.4.1 Modify Flow Entry Message
+    -- 7.3.4 Modify State Messages
     ofp_flow_mod_F,
     ofp_flow_mod_cookie_F,
     ofp_flow_mod_cookie_mask_F,
@@ -2387,7 +2423,6 @@ of13_proto.fields = {
     ofp_multipart_request_type_F,
     ofp_multipart_request_flags_F,
     ofp_multipart_request_padding_F,
-
     ofp_multipart_reply_F,
     ofp_multipart_reply_type_F,
     ofp_multipart_reply_flags_F,
@@ -2403,7 +2438,6 @@ of13_proto.fields = {
     -- 7.3.5.6 Port Statistics
     ofp_port_stats_request_port_F,
     ofp_port_stats_request_padding_F,
-
     ofp_port_stats_reply_port_F,
     ofp_port_stats_reply_padding_F,
     ofp_port_stats_reply_rx_packets_F,
