@@ -364,19 +364,19 @@ end
 
 -- 7.2.3 Flow Match Structures
 -- -------------------------------------------------
-ofp_match_F               = ProtoField.string("of13.match",         "Flow Match Header")
-ofp_match_type_F          = ProtoField.uint16("of13.match_type",    "Type")
-ofp_match_length_F        = ProtoField.uint16("of13.match_length",  "Length")
-ofp_match_ofp_oxm_F       = ProtoField.uint16("of13.match_oxm",     "OXM")
-ofp_match_pad_F           = ProtoField.string("of13.match_pad",     "Padding")
+ofp_match_F         = ProtoField.string("of13.match",        "Flow Match Header")
+ofp_match_type_F    = ProtoField.uint16("of13.match_type",   "Type")
+ofp_match_length_F  = ProtoField.uint16("of13.match_length", "Length")
+ofp_match_ofp_oxm_F = ProtoField.uint16("of13.match_oxm",    "OXM")
+ofp_match_pad_F     = ProtoField.string("of13.match_pad",    "Padding")
 
-ofp_oxm_F                 = ProtoField.string("of13.oxm",           "Flow Match Fileld")
-ofp_oxm_class_F           = ProtoField.uint16("of13.oxm_class",     "Match class: member class ie reserved class", base.HEX)
-ofp_oxm_field_F           = ProtoField.uint8("of13.oxm_field",      "Match field within the class", base.HEX, nil, 0xfe)
-ofp_oxm_hasmask_F         = ProtoField.uint8("of13.oxm_hasmask",    "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
-ofp_oxm_length_F          = ProtoField.uint8("of13.oxm_length",     "Length of OXM payload")
-ofp_oxm_value_F           = ProtoField.string("of13.oxm_value",     "Value")
-ofp_oxm_mask_F            = ProtoField.string("of13.oxm_mask",      "Mask ")
+ofp_oxm_F         = ProtoField.string("of13.oxm",        "Flow Match Fileld")
+ofp_oxm_class_F   = ProtoField.uint16("of13.oxm_class",  "Match class: member class ie reserved class", base.HEX)
+ofp_oxm_field_F   = ProtoField.uint8("of13.oxm_field",   "Match field within the class", base.HEX, nil, 0xfe)
+ofp_oxm_hasmask_F = ProtoField.uint8("of13.oxm_hasmask", "Set if OXM include a bitmask in payload", base.HEX, VALS_BOOL, 0x01)
+ofp_oxm_length_F  = ProtoField.uint8("of13.oxm_length",  "Length of OXM payload")
+ofp_oxm_value_F   = ProtoField.string("of13.oxm_value",  "Value")
+ofp_oxm_mask_F    = ProtoField.string("of13.oxm_mask",   "Mask ")
 
 ofp_match_type_string = {
     [0] = "OFPMT_STANDARD",
@@ -767,34 +767,26 @@ end
 
 -- 7.2.5 Action Structures
 -- -------------------------------------------------
-ofp_action_header_F             = ProtoField.string("of13.action",                  "Action")
-ofp_action_header_type_F        = ProtoField.uint16("of13.action_type",             "One of OFPAT_*")
-ofp_action_header_length_F      = ProtoField.uint16("of13.action_length",           "Length of action, including this header")
-ofp_action_header_pad_F         = ProtoField.string("of13.action_pad",              "Pad to 64 bits")
-
-ofp_action_output_port_F        = ProtoField.uint32("of13.action_output_port",      "Output port")
-ofp_action_output_max_len_F     = ProtoField.uint16("of13.action_output_maxlen",    "Max length to send to controller")
-ofp_action_output_pad_F         = ProtoField.string("of13.action_output_pad",       "Pad to 64 bits")
-
-ofp_action_group_group_id_F     = ProtoField.uint32("of13.action_group_id",         "Group ID")
-ofp_action_group_queue_id_F     = ProtoField.uint32("of13.action_queue_id",         "Queue ID")
-
-ofp_action_mpls_ttl_mpls_ttl_F  = ProtoField.uint32("of13.action_mpls_ttl",         "MPLS TTL")
-ofp_action_mpls_ttl_pad_F       = ProtoField.string("of13.action_mpls_pad",         "Padding")
-
-ofp_action_nw_ttl_nw_ttl_F      = ProtoField.uint8("of13.nw_ttl",                   "IP TTL")
-ofp_action_nw_ttl_pad_F         = ProtoField.string("of13.nw_ttl_pad",              "Pad to 64 bits")
-
-ofp_action_push_ethertype_F     = ProtoField.uint16("of13.action_push_type",        "EtherType", base.HEX)
-ofp_action_push_pad_F           = ProtoField.string("of13.action_push_pad",         "Padding")
-
-ofp_action_pop_mpls_ethertype_F = ProtoField.uint16("of13.action_pop_mpls_type",    "EtherType", base.HEX)
-ofp_action_pop_mpls_pad_F       = ProtoField.string("of13.action_pop_mpls_pad",     "Padding")
-
-ofp_action_set_field_type_F     = ProtoField.uint16("of13.action_set_field_type",   "Type")
-ofp_action_set_field_len_F      = ProtoField.uint16("of13.action_set_field_len",    "Length")
-
-ofp_action_experimenter_F       = ProtoField.uint32("of13.action_expetimenter",     "Experimenter")
+ofp_action_header_F             = ProtoField.string("of13.action",                "Action")
+ofp_action_header_type_F        = ProtoField.uint16("of13.action_type",           "One of OFPAT_*")
+ofp_action_header_length_F      = ProtoField.uint16("of13.action_length",         "Length of action, including this header")
+ofp_action_header_pad_F         = ProtoField.string("of13.action_pad",            "Pad to 64 bits")
+ofp_action_output_port_F        = ProtoField.uint32("of13.action_output_port",    "Output port")
+ofp_action_output_max_len_F     = ProtoField.uint16("of13.action_output_maxlen",  "Max length to send to controller")
+ofp_action_output_pad_F         = ProtoField.string("of13.action_output_pad",     "Pad to 64 bits")
+ofp_action_group_group_id_F     = ProtoField.uint32("of13.action_group_id",       "Group ID")
+ofp_action_group_queue_id_F     = ProtoField.uint32("of13.action_queue_id",       "Queue ID")
+ofp_action_mpls_ttl_mpls_ttl_F  = ProtoField.uint32("of13.action_mpls_ttl",       "MPLS TTL")
+ofp_action_mpls_ttl_pad_F       = ProtoField.string("of13.action_mpls_pad",       "Padding")
+ofp_action_nw_ttl_nw_ttl_F      = ProtoField.uint8("of13.nw_ttl",                 "IP TTL")
+ofp_action_nw_ttl_pad_F         = ProtoField.string("of13.nw_ttl_pad",            "Pad to 64 bits")
+ofp_action_push_ethertype_F     = ProtoField.uint16("of13.action_push_type",      "EtherType", base.HEX)
+ofp_action_push_pad_F           = ProtoField.string("of13.action_push_pad",       "Padding")
+ofp_action_pop_mpls_ethertype_F = ProtoField.uint16("of13.action_pop_mpls_type",  "EtherType", base.HEX)
+ofp_action_pop_mpls_pad_F       = ProtoField.string("of13.action_pop_mpls_pad",   "Padding")
+ofp_action_set_field_type_F     = ProtoField.uint16("of13.action_set_field_type", "Type")
+ofp_action_set_field_len_F      = ProtoField.uint16("of13.action_set_field_len",  "Length")
+ofp_action_experimenter_F       = ProtoField.uint32("of13.action_expetimenter",   "Experimenter")
 
 ofp_action_type = {
     [0]      = "OFPAT_OUTPUT",       -- Output to switch port.
@@ -1052,7 +1044,7 @@ function ofp_switch_features(buffer, pinfo, tree)
     local _n_buffers_range    = buffer(8,4)
     local _n_tables_range     = buffer(12,1)
     local _auxiliary_id_range = buffer(13,1)
-    local _pad_range      = buffer(14,2)
+    local _pad_range          = buffer(14,2)
     local _capabilities_range = buffer(16,4)
     local _reserved_range     = buffer(20,4)
     local pointer = 24
@@ -1061,7 +1053,7 @@ function ofp_switch_features(buffer, pinfo, tree)
     local _n_buffers    = _n_buffers_range:uint()
     local _n_tables     = _n_tables_range:uint()
     local _auxiliary_id = _auxiliary_id_range:uint()
-    local _pad      = tostring(_pad_range)
+    local _pad          = tostring(_pad_range)
     local _capabilities = _capabilities_range:uint()
     local _reserved     = tostring(_reserved_range)
 
@@ -1070,7 +1062,7 @@ function ofp_switch_features(buffer, pinfo, tree)
     subtree:add(ofp_switch_features_n_buffers_F,    _n_buffers_range,    _n_buffers)
     subtree:add(ofp_switch_features_n_tables_F,     _n_tables_range,     _n_tables)
     subtree:add(ofp_switch_features_auxiliary_id_F, _auxiliary_id_range, _auxiliary_id)
-    subtree:add(ofp_switch_features_pad_F,      _pad_range,      _pad)
+    subtree:add(ofp_switch_features_pad_F,          _pad_range,          _pad)
     cap_tree = subtree:add(ofp_switch_features_capabilities_F,    _capabilities_range, _capabilities)
     cap_tree:add(ofp_switch_features_capabilities_flow_stats_F,   _capabilities_range, _capabilities)
     cap_tree:add(ofp_switch_features_capabilities_table_stats_F,  _capabilities_range, _capabilities)
@@ -1129,19 +1121,19 @@ end
 
 -- 7.3.4 Modify State Messages
 -- -------------------------------------------------
-ofp_flow_mod_F                     = ProtoField.string("of13.flowmod" ,               "Modify Flow Entry Message")
-ofp_flow_mod_cookie_F              = ProtoField.uint64("of13.flowmod_cookie",         "Cookie", base.HEX)
-ofp_flow_mod_cookie_mask_F         = ProtoField.uint64("of13.flowmod_cookie_mask",    "Cookie mask", base.HEX)
-ofp_flow_mod_table_id_F            = ProtoField.uint8("of13.flowmod_table_id",        "Table ID")
-ofp_flow_mod_command_F             = ProtoField.uint8("of13.flowmod_command",         "Command")
-ofp_flow_mod_idle_timeout_F        = ProtoField.uint16("of13.flowmod_idle_timeout",   "Idle timeout")
-ofp_flow_mod_hard_timeout_F        = ProtoField.uint16("of13.flowmod_hard_timeout",   "Hard timeout")
-ofp_flow_mod_priority_F            = ProtoField.uint16("of13.flowmod_priority",       "Priority")
-ofp_flow_mod_buffer_id_F           = ProtoField.uint32("of13.flowmod_buffer_id",      "Buffer ID")
-ofp_flow_mod_out_port_F            = ProtoField.uint32("of13.flowmod_out_port",       "Out port")
-ofp_flow_mod_out_group_F           = ProtoField.uint32("of13.flowmod_out_group",      "Out group")
-ofp_flow_mod_flags_F               = ProtoField.uint16("of13.flowmod_flags",          "Flags", base.HEX)
-ofp_flow_mod_pad_F                 = ProtoField.string("of13.flowmod_pad",            "Padding")
+ofp_flow_mod_F              = ProtoField.string("of13.flowmod" ,             "Modify Flow Entry Message")
+ofp_flow_mod_cookie_F       = ProtoField.uint64("of13.flowmod_cookie",       "Cookie", base.HEX)
+ofp_flow_mod_cookie_mask_F  = ProtoField.uint64("of13.flowmod_cookie_mask",  "Cookie mask", base.HEX)
+ofp_flow_mod_table_id_F     = ProtoField.uint8("of13.flowmod_table_id",      "Table ID")
+ofp_flow_mod_command_F      = ProtoField.uint8("of13.flowmod_command",       "Command")
+ofp_flow_mod_idle_timeout_F = ProtoField.uint16("of13.flowmod_idle_timeout", "Idle timeout")
+ofp_flow_mod_hard_timeout_F = ProtoField.uint16("of13.flowmod_hard_timeout", "Hard timeout")
+ofp_flow_mod_priority_F     = ProtoField.uint16("of13.flowmod_priority",     "Priority")
+ofp_flow_mod_buffer_id_F    = ProtoField.uint32("of13.flowmod_buffer_id",    "Buffer ID")
+ofp_flow_mod_out_port_F     = ProtoField.uint32("of13.flowmod_out_port",     "Out port")
+ofp_flow_mod_out_group_F    = ProtoField.uint32("of13.flowmod_out_group",    "Out group")
+ofp_flow_mod_flags_F        = ProtoField.uint16("of13.flowmod_flags",        "Flags", base.HEX)
+ofp_flow_mod_pad_F          = ProtoField.string("of13.flowmod_pad",          "Padding")
 
 ofp_flow_mod_flags_send_flow_rem_F = ProtoField.uint16("of13.mod_flag_flow_rem",      "Flow removed", base.HEX, VALS_BOOL, 0x0001)
 ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_overlap", "Check overlap", base.HEX, VALS_BOOL, 0x0002)
@@ -1381,15 +1373,15 @@ end
 
 -- 7.3.5 Multipart Messages
 -- -------------------------------------------------
-ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Reqeust")
-ofp_multipart_request_type_F    = ProtoField.uint16("of13.multipart_request_type",    "Type")
-ofp_multipart_request_flags_F   = ProtoField.uint16("of13.multipart_request_flags",   "Flags")
-ofp_multipart_request_pad_F     = ProtoField.string("of13.multipart_request_pad",     "Padding")
+ofp_multipart_request_F       = ProtoField.string("of13.multipart_request",       "Multipart Reqeust")
+ofp_multipart_request_type_F  = ProtoField.uint16("of13.multipart_request_type",  "Type")
+ofp_multipart_request_flags_F = ProtoField.uint16("of13.multipart_request_flags", "Flags")
+ofp_multipart_request_pad_F   = ProtoField.string("of13.multipart_request_pad",   "Padding")
 
-ofp_multipart_reply_F           = ProtoField.string("of13.multipart_reply",           "Multipart Reply")
-ofp_multipart_reply_type_F      = ProtoField.uint16("of13.multipart_reply_type",      "Type")
-ofp_multipart_reply_flags_F     = ProtoField.uint16("of13.multipart_reply_flags",     "Flags")
-ofp_multipart_reply_pad_F       = ProtoField.string("of13.multipart_reply_pad",       "Padding")
+ofp_multipart_reply_F         = ProtoField.string("of13.multipart_reply",         "Multipart Reply")
+ofp_multipart_reply_type_F    = ProtoField.uint16("of13.multipart_reply_type",    "Type")
+ofp_multipart_reply_flags_F   = ProtoField.uint16("of13.multipart_reply_flags",   "Flags")
+ofp_multipart_reply_pad_F     = ProtoField.string("of13.multipart_reply_pad",     "Padding")
 
 ofp_multipart_request_flags = {
     [0] = "Last in the next",
@@ -1770,7 +1762,7 @@ ofp_aggregate_stats_request_out_group_F   = ProtoField.uint32("of13.aggregate_st
 ofp_aggregate_stats_request_pad2_F        = ProtoField.string("of13.aggregate_stats_request_pad2",        "Padding")
 ofp_aggregate_stats_request_cookie_F      = ProtoField.uint64("of13.aggregate_stats_request_cookie",      "Cookie", base.HEX)
 ofp_aggregate_stats_request_cookie_mask_F = ProtoField.uint64("of13.aggregate_stats_request_cookie_mask", "Cookie Mask", base.HEX)
-                                                                    
+
 ofp_aggregate_stats_reply_packet_count_F = ProtoField.uint64("of13.aggregate_stats_reply_packet_count", "Packet count")
 ofp_aggregate_stats_reply_byte_count_F   = ProtoField.uint64("of13.aggregate_stats_reply_byte_count",   "Byte count")
 ofp_aggregate_stats_reply_flow_count_F   = ProtoField.uint32("of13.aggregate_stats_reply_flow_count",   "Flow count")
@@ -1862,14 +1854,14 @@ function ofp_table_stats(buffer, pinfo, tree)
 end
 
 -- 7.3.5.5 Table Features
-ofp_table_features_length_F             = ProtoField.uint16("of13.table_features_length",         "Length")
-ofp_table_features_table_id_F           = ProtoField.uint8 ("of13.table_features_table_id",       "Table ID")
-ofp_table_features_pad_F                = ProtoField.string("of13.table_features_pad",            "Padding")
-ofp_table_features_name_F               = ProtoField.uint64("of13.table_features_name",           "Name")
-ofp_table_features_metadata_match_F     = ProtoField.uint64("of13.table_features_metadata_match", "Metadata match")
-ofp_table_features_metadata_write_F     = ProtoField.uint64("of13.table_features_metadata_write", "Metadata write")
-ofp_table_features_config_F             = ProtoField.uint32("of13.table_features_config",         "Config")
-ofp_table_features_max_entries_F        = ProtoField.uint32("of13.table_features_max_entries",    "Max entries")
+ofp_table_features_length_F         = ProtoField.uint16("of13.table_features_length",         "Length")
+ofp_table_features_table_id_F       = ProtoField.uint8 ("of13.table_features_table_id",       "Table ID")
+ofp_table_features_pad_F            = ProtoField.string("of13.table_features_pad",            "Padding")
+ofp_table_features_name_F           = ProtoField.uint64("of13.table_features_name",           "Name")
+ofp_table_features_metadata_match_F = ProtoField.uint64("of13.table_features_metadata_match", "Metadata match")
+ofp_table_features_metadata_write_F = ProtoField.uint64("of13.table_features_metadata_write", "Metadata write")
+ofp_table_features_config_F         = ProtoField.uint32("of13.table_features_config",         "Config")
+ofp_table_features_max_entries_F    = ProtoField.uint32("of13.table_features_max_entries",    "Max entries")
 
 function ofp_table_features(buffer, pinfo, tree)
     local _length_range         = buffer(0,2)
