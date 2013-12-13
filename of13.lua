@@ -232,9 +232,9 @@ end
 -- 7.2.1 Port Structures
 -- -------------------------------------------------
 ofp_port_port_no_F    = ProtoField.uint32("of13.port_port_no",    "Port")
-ofp_port_pad1_F   = ProtoField.uint32("of13.port_pad1",   "Padding")
+ofp_port_pad1_F       = ProtoField.uint32("of13.port_pad1",       "Padding")
 ofp_port_hw_addr_F    = ProtoField.string("of13.port_hw_addr",    "HW Addr")
-ofp_port_pad2_F   = ProtoField.string("of13.port_pad2",   "Padding")
+ofp_port_pad2_F       = ProtoField.string("of13.port_pad2",       "Padding")
 ofp_port_name_F       = ProtoField.string("of13.port_name",       "Name")
 ofp_port_config_F     = ProtoField.uint32("of13.port_config",     "Config")
 ofp_port_state_F      = ProtoField.uint32("of13.port_state",      "State")
@@ -247,9 +247,9 @@ ofp_port_max_speed_F  = ProtoField.uint32("of13.port_max_speed",  "Max bitrate [
 
 function ofp_port(buffer, pinfo, tree)
     local _port_no_range    = buffer(0,4)
-    local _pad1_range   = buffer(4,4)
+    local _pad1_range       = buffer(4,4)
     local _hw_addr_range    = buffer(8,6)
-    local _pad2_range   = buffer(14,2)
+    local _pad2_range       = buffer(14,2)
     local _name_range       = buffer(16,16)
     local _config_range     = buffer(32,4)
     local _state_range      = buffer(36,4)
@@ -262,9 +262,9 @@ function ofp_port(buffer, pinfo, tree)
     local pointer = 64
 
     local _port_no    = _port_no_range:uint()
-    local _pad1   = tostring(_pad1_range)
+    local _pad1       = tostring(_pad1_range)
     local _hw_addr    = tostring(_hw_addr_range:ether())
-    local _pad2   = tostring(_pad2_range)
+    local _pad2       = tostring(_pad2_range)
     local _name       = _name_range:stringz()
     local _config     = _config_range:uint()
     local _state      = _state_range:uint()
@@ -276,9 +276,9 @@ function ofp_port(buffer, pinfo, tree)
     local _max_speed  = _max_speed_range:uint()
 
     tree:add(ofp_port_port_no_F   , _port_no_range   , _port_no   )
-    tree:add(ofp_port_pad1_F  , _pad1_range  , _pad1  )
+    tree:add(ofp_port_pad1_F      , _pad1_range      , _pad1      )
     tree:add(ofp_port_hw_addr_F   , _hw_addr_range   , _hw_addr   )
-    tree:add(ofp_port_pad2_F  , _pad2_range  , _pad2  )
+    tree:add(ofp_port_pad2_F      , _pad2_range      , _pad2      )
     tree:add(ofp_port_name_F      , _name_range      , _name      )
     tree:add(ofp_port_config_F    , _config_range    , _config    )
     tree:add(ofp_port_state_F     , _state_range     , _state     )
@@ -294,10 +294,10 @@ end
 
 -- 7.2.2 Queue Structures
 -- -------------------------------------------------
-ofp_packet_queue_queue_id_F = ProtoField.uint32("of13.packet_queue_queue_id",  "Queue ID")
-ofp_packet_queue_port_F     = ProtoField.uint32("of13.packet_queue_port",  "Port")
-ofp_packet_queue_len_F      = ProtoField.uint16("of13.packet_queue_len",  "Length")
-ofp_packet_queue_pad_F      = ProtoField.string("of13.packet_queue_pad",  "Padding")
+ofp_packet_queue_queue_id_F = ProtoField.uint32("of13.packet_queue_queue_id", "Queue ID")
+ofp_packet_queue_port_F     = ProtoField.uint32("of13.packet_queue_port",     "Port")
+ofp_packet_queue_len_F      = ProtoField.uint16("of13.packet_queue_len",      "Length")
+ofp_packet_queue_pad_F      = ProtoField.string("of13.packet_queue_pad",      "Padding")
 
 ofp_queue_properties = {
     [1] = "OFPQT_MIN_RATE",
@@ -368,7 +368,8 @@ ofp_match_F               = ProtoField.string("of13.match",         "Flow Match 
 ofp_match_type_F          = ProtoField.uint16("of13.match_type",    "Type")
 ofp_match_length_F        = ProtoField.uint16("of13.match_length",  "Length")
 ofp_match_ofp_oxm_F       = ProtoField.uint16("of13.match_oxm",     "OXM")
-ofp_match_pad_F       = ProtoField.string("of13.match_pad", "Padding")
+ofp_match_pad_F           = ProtoField.string("of13.match_pad",     "Padding")
+
 ofp_oxm_F                 = ProtoField.string("of13.oxm",           "Flow Match Fileld")
 ofp_oxm_class_F           = ProtoField.uint16("of13.oxm_class",     "Match class: member class ie reserved class", base.HEX)
 ofp_oxm_field_F           = ProtoField.uint8("of13.oxm_field",      "Match field within the class", base.HEX, nil, 0xfe)
@@ -675,7 +676,7 @@ ofp_instruction_F               = ProtoField.string("of13.instruction",         
 ofp_instruction_type_F          = ProtoField.string("of13.instruction_type",          "Type")
 ofp_instruction_length_F        = ProtoField.string("of13.instruction_length",        "Length")
 ofp_instruction_table_id_F      = ProtoField.string("of13.instruction_table_id",      "Table ID")
-ofp_instruction_pad_F       = ProtoField.string("of13.instruction_pad",       "Padding")
+ofp_instruction_pad_F           = ProtoField.string("of13.instruction_pad",           "Padding")
 ofp_instruction_metadata_F      = ProtoField.string("of13.instruction_metadata",      "Metadata")
 ofp_instruction_metadata_mask_F = ProtoField.string("of13.instruction_metadata_mask", "Metadata mask")
 ofp_instruction_meter_F         = ProtoField.string("of13.instruction_meter",         "Meter")
@@ -769,20 +770,30 @@ end
 ofp_action_header_F             = ProtoField.string("of13.action",                  "Action")
 ofp_action_header_type_F        = ProtoField.uint16("of13.action_type",             "One of OFPAT_*")
 ofp_action_header_length_F      = ProtoField.uint16("of13.action_length",           "Length of action, including this header")
-ofp_action_header_pad_F     = ProtoField.string("of13.action_pad",          "Pad to 64 bits")
+ofp_action_header_pad_F         = ProtoField.string("of13.action_pad",              "Pad to 64 bits")
+
 ofp_action_output_port_F        = ProtoField.uint32("of13.action_output_port",      "Output port")
 ofp_action_output_max_len_F     = ProtoField.uint16("of13.action_output_maxlen",    "Max length to send to controller")
-ofp_action_output_pad_F     = ProtoField.string("of13.action_output_pad",   "Pad to 64 bits")
+ofp_action_output_pad_F         = ProtoField.string("of13.action_output_pad",       "Pad to 64 bits")
+
 ofp_action_group_group_id_F     = ProtoField.uint32("of13.action_group_id",         "Group ID")
 ofp_action_group_queue_id_F     = ProtoField.uint32("of13.action_queue_id",         "Queue ID")
+
 ofp_action_mpls_ttl_mpls_ttl_F  = ProtoField.uint32("of13.action_mpls_ttl",         "MPLS TTL")
-ofp_action_mpls_ttl_pad_F   = ProtoField.string("of13.action_mpls_pad",     "Padding")
+ofp_action_mpls_ttl_pad_F       = ProtoField.string("of13.action_mpls_pad",         "Padding")
+
 ofp_action_nw_ttl_nw_ttl_F      = ProtoField.uint8("of13.nw_ttl",                   "IP TTL")
-ofp_action_nw_ttl_pad_F     = ProtoField.string("of13.nw_ttl_pad",          "Pad to 64 bits")
+ofp_action_nw_ttl_pad_F         = ProtoField.string("of13.nw_ttl_pad",              "Pad to 64 bits")
+
 ofp_action_push_ethertype_F     = ProtoField.uint16("of13.action_push_type",        "EtherType", base.HEX)
-ofp_action_push_pad_F       = ProtoField.string("of13.action_push_pad",     "Padding")
+ofp_action_push_pad_F           = ProtoField.string("of13.action_push_pad",         "Padding")
+
 ofp_action_pop_mpls_ethertype_F = ProtoField.uint16("of13.action_pop_mpls_type",    "EtherType", base.HEX)
-ofp_action_pop_mpls_pad_F   = ProtoField.string("of13.action_pop_mpls_pad", "Padding")
+ofp_action_pop_mpls_pad_F       = ProtoField.string("of13.action_pop_mpls_pad",     "Padding")
+
+ofp_action_set_field_type_F     = ProtoField.uint16("of13.action_set_field_type",   "Type")
+ofp_action_set_field_len_F      = ProtoField.uint16("of13.action_set_field_len",    "Length")
+
 ofp_action_experimenter_F       = ProtoField.uint32("of13.action_expetimenter",     "Experimenter")
 
 ofp_action_type = {
@@ -824,6 +835,7 @@ function ofp_action_header(buffer, pinfo, tree)
 
     if ofp_action_type[_type] == "OFPAT_OUTPUT" then
         offset = ofp_action_output(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_COPY_TTL_OUT" or
            ofp_action_type[_type] == "OFPAT_COPY_TTL_IN" or
            ofp_action_type[_type] == "OFPAT_DEC_MPLS_TTL" or
@@ -835,20 +847,28 @@ function ofp_action_header(buffer, pinfo, tree)
         local _pad = tostring(_pad_range)
         subtree:add(ofp_action_header_pad_F, _pad_range, _pad)
         offset = 4
+
     elseif ofp_action_type[_type] == "OFPAT_SET_MPLS_TTL" then
         offset = ofp_action_mpls_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_PUSH_VLAN" then
         offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_PUSH_MPLS" then
         offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_POP_MPLS" then
+
         offset = ofp_action_pop_mpls(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_SET_QUEUE" then
+
         offset = ofp_action_set_queue(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     elseif ofp_action_type[_type] == "OFPAT_GROUP" then
+
         offset = ofp_action_group(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_SET_NW_TTL" then
         offset = ofp_action_nw_ttl(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_SET_FIELD" then
         offset = ofp_oxm_field(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
         pointer = pointer + offset
@@ -856,8 +876,10 @@ function ofp_action_header(buffer, pinfo, tree)
         local _pad = tostring(_pad_range)
         subtree:add(ofp_action_header_pad_F, _pad_range, _pad)
         offset = (math.ceil(_length/8)*8) - pointer
+
     elseif ofp_action_type[_type] == "OFPAT_PUSH_PBB" then
         offset = ofp_action_push(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
     elseif ofp_action_type[_type] == "OFPAT_EXPERIMENTER" then
         offset = ofp_action_experimenter(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     end
@@ -1014,7 +1036,7 @@ ofp_switch_features_datapath_id_F               = ProtoField.uint64("of13.featur
 ofp_switch_features_n_buffers_F                 = ProtoField.uint32("of13.feature_n_buffers",        "Max packets buffered at once")
 ofp_switch_features_n_tables_F                  = ProtoField.uint8 ("of13.feature_n_tables",         "Number of tables supported by datapath")
 ofp_switch_features_auxiliary_id_F              = ProtoField.uint8 ("of13.feature_auxiliary_id",     "Identify auxiliary connections")
-ofp_switch_features_pad_F                   = ProtoField.string("of13.feature_pad",          "Align to 64-bits")
+ofp_switch_features_pad_F                       = ProtoField.string("of13.feature_pad",              "Align to 64-bits")
 ofp_switch_features_capabilities_F              = ProtoField.uint32("of13.feature_capabilities",     "Bitmap of support ofp_capabilities", base.HEX)
 ofp_switch_features_reserved_F                  = ProtoField.string("of13.feature_reserved",         "reserved")
 ofp_switch_features_capabilities_flow_stats_F   = ProtoField.uint32("of13.feature_cap_flow",         "Flow statistics", base.HEX, VALS_BOOL, 0x00000001)
@@ -1062,7 +1084,6 @@ end
 
 -- 7.3.2 Swtich Configuration
 -- -------------------------------------------------
-ofp_config_F               = ProtoField.string("of13.config",               "Switch Configuration")
 ofp_config_flags_F         = ProtoField.uint16("of13.config_flags",         "OFPC_* flags", base.HEX)
 ofp_config_miss_send_len_F = ProtoField.uint16("of13.config_miss_send_len", "Max bytes of packet")
 
@@ -1083,6 +1104,10 @@ end
 
 -- 7.3.3 Flow Table Configuration
 -- -------------------------------------------------
+ofp_table_mod_table_id_F = ProtoField.uint8("of13.table_mod_table_id", "Table ID")
+ofp_table_mod_pad_F      = ProtoField.string("of13.table_mod_pad",     "Padding")
+ofp_table_mod_config_F   = ProtoField.uint32("of13.table_mod_config",  "Config")
+
 function ofp_table_mod(buffer, pinfo, tree)
     local _table_id_range = buffer(0,1)
     local _pad_range      = buffer(1,3)
@@ -1116,12 +1141,42 @@ ofp_flow_mod_buffer_id_F           = ProtoField.uint32("of13.flowmod_buffer_id",
 ofp_flow_mod_out_port_F            = ProtoField.uint32("of13.flowmod_out_port",       "Out port")
 ofp_flow_mod_out_group_F           = ProtoField.uint32("of13.flowmod_out_group",      "Out group")
 ofp_flow_mod_flags_F               = ProtoField.uint16("of13.flowmod_flags",          "Flags", base.HEX)
-ofp_flow_mod_pad_F             = ProtoField.string("of13.flowmod_pad",        "Padding")
+ofp_flow_mod_pad_F                 = ProtoField.string("of13.flowmod_pad",            "Padding")
+
 ofp_flow_mod_flags_send_flow_rem_F = ProtoField.uint16("of13.mod_flag_flow_rem",      "Flow removed", base.HEX, VALS_BOOL, 0x0001)
 ofp_flow_mod_flags_check_overlap_F = ProtoField.uint16("of13.mod_flag_check_overlap", "Check overlap", base.HEX, VALS_BOOL, 0x0002)
 ofp_flow_mod_flags_reset_counts_F  = ProtoField.uint16("of13.mod_flag_reset_count",   "Reset count", base.HEX, VALS_BOOL, 0x0004)
 ofp_flow_mod_flags_no_pkt_counts_F = ProtoField.uint16("of13.mod_flag_no_pkt_count",  "No packet count", base.HEX, VALS_BOOL, 0x0008)
 ofp_flow_mod_flags_no_byt_counts_F = ProtoField.uint16("of13.mod_flag_no_byt_count",  "No byte count", base.HEX, VALS_BOOL, 0x0010)
+
+ofp_group_mod_command_F  = ProtoField.uint16("of13.group_mod_command",  "Command")
+ofp_group_mod_type_F     = ProtoField.uint8("of13.group_mod_type",      "Type")
+ofp_group_mod_pad_F      = ProtoField.string("of13.group_mod_pad",      "Padding")
+ofp_group_mod_group_id_F = ProtoField.uint32("of13.group_mod_group_id", "Group ID")
+
+ofp_bucket_len_F         = ProtoField.uint16("of13.bucket_len",         "Length")
+ofp_bucket_weight_F      = ProtoField.uint16("of13.bucket_weight",      "Weight")
+ofp_bucket_watch_port_F  = ProtoField.uint32("of13.bucket_watch_port",  "Watch port")
+ofp_bucket_watch_group_F = ProtoField.uint32("of13.bucket_watch_group", "Watch group")
+ofp_bucket_pad_F         = ProtoField.string("of13.bucket_pad",         "Padding")
+
+ofp_port_mod_port_no_F   = ProtoField.uint32("of13.ofp_port_mod_port_no",   "Port No")
+ofp_port_mod_pad_F       = ProtoField.string("of13.ofp_port_mod_pad",       "Padding")
+ofp_port_mod_hw_addr_F   = ProtoField.string("of13.ofp_port_mod_hw_addr",   "HW Addr")
+ofp_port_mod_pad2_F      = ProtoField.string("of13.ofp_port_mod_pad2",      "Padding")
+ofp_port_mod_config_F    = ProtoField.uint32("of13.ofp_port_mod_config",    "Config")
+ofp_port_mod_mask_F      = ProtoField.uint32("of13.ofp_port_mod_mask",      "Mask")
+ofp_port_mod_advertise_F = ProtoField.uint32("of13.ofp_port_mod_advertise", "Advertise")
+ofp_port_mod_pad3_F      = ProtoField.string("of13.ofp_port_mod_pad3",      "Padding")
+
+ofp_meter_mod_command_F  = ProtoField.uint16("of13.meter_mod_command",  "Command")
+ofp_meter_mod_flags_F    = ProtoField.uint16("of13.meter_mod_flags",    "Flags")
+ofp_meter_mod_meter_id_F = ProtoField.uint32("of13.meter_mod_meter_id", "Meter ID")
+
+ofp_meter_band_header_type_F       = ProtoField.uint32("of13.ofp_meter_band_header_type_F",       "Type")
+ofp_meter_band_header_len_F        = ProtoField.uint32("of13.ofp_meter_band_header_len_F",        "Length")
+ofp_meter_band_header_rate_F       = ProtoField.uint32("of13.ofp_meter_band_header_rate_F",       "Rate")
+ofp_meter_band_header_burst_size_F = ProtoField.uint32("of13.ofp_meter_band_header_burst_size_F", "Burst size")
 
 ofp_flow_mod_command = {
     [0] = "OFPFC_ADD",           -- New flow.
@@ -1329,11 +1384,12 @@ end
 ofp_multipart_request_F         = ProtoField.string("of13.multipart_request",         "Multipart Reqeust")
 ofp_multipart_request_type_F    = ProtoField.uint16("of13.multipart_request_type",    "Type")
 ofp_multipart_request_flags_F   = ProtoField.uint16("of13.multipart_request_flags",   "Flags")
-ofp_multipart_request_pad_F = ProtoField.string("of13.multipart_request_pad", "Padding")
+ofp_multipart_request_pad_F     = ProtoField.string("of13.multipart_request_pad",     "Padding")
+
 ofp_multipart_reply_F           = ProtoField.string("of13.multipart_reply",           "Multipart Reply")
 ofp_multipart_reply_type_F      = ProtoField.uint16("of13.multipart_reply_type",      "Type")
 ofp_multipart_reply_flags_F     = ProtoField.uint16("of13.multipart_reply_flags",     "Flags")
-ofp_multipart_reply_pad_F   = ProtoField.string("of13.multipart_reply_pad",   "Padding")
+ofp_multipart_reply_pad_F       = ProtoField.string("of13.multipart_reply_pad",       "Padding")
 
 ofp_multipart_request_flags = {
     [0] = "Last in the next",
@@ -1594,29 +1650,52 @@ function ofp_desc(buffer, pinfo, tree)
 end
 
 -- 7.3.5.2 Individual Flow Statistics
+ofp_flow_stats_request_table_id_F    = ProtoField.uint8("of13.flow_stats_request_table_id",     "Table ID")
+ofp_flow_stats_request_pad1_F        = ProtoField.string("of13.flow_stats_request_pad1",        "Padding")
+ofp_flow_stats_request_out_port_F    = ProtoField.uint32("of13.flow_stats_request_out_port",    "Out Port")
+ofp_flow_stats_request_out_group_F   = ProtoField.uint32("of13.flow_stats_request_out_group",   "Out Group")
+ofp_flow_stats_request_pad2_F        = ProtoField.string("of13.flow_stats_request_pad2",        "Padding")
+ofp_flow_stats_request_cookie_F      = ProtoField.uint64("of13.flow_stats_request_cookie",      "Cookie", base.HEX)
+ofp_flow_stats_request_cookie_mask_F = ProtoField.uint64("of13.flow_stats_request_cookie_mask", "Cookie Mask", base.HEX)
+
+ofp_flow_stats_F               = ProtoField.string("of13.flow_stats",               "ofp_flow_stats")
+ofp_flow_stats_length_F        = ProtoField.uint16("of13.flow_stats_length",        "Length")
+ofp_flow_stats_table_id_F      = ProtoField.uint8("of13.flow_stats_table_id",       "Table ID")
+ofp_flow_stats_pad1_F          = ProtoField.string("of13.flow_stats_pad1",          "Padding")
+ofp_flow_stats_duration_sec_F  = ProtoField.uint32("of13.flow_stats_duration_sec",  "Duration sec")
+ofp_flow_stats_duration_nsec_F = ProtoField.uint32("of13.flow_stats_duration_nsec", "Duration nsec")
+ofp_flow_stats_priority_F      = ProtoField.uint16("of13.flow_stats_priority",      "Priority")
+ofp_flow_stats_idle_timeout_F  = ProtoField.uint16("of13.flow_stats_idle_timeout",  "Idle timeout")
+ofp_flow_stats_hard_timeout_F  = ProtoField.uint16("of13.flow_stats_hard_timeout",  "Hard timeout")
+ofp_flow_stats_flags_F         = ProtoField.uint16("of13.flow_stats_flags",         "Flags")
+ofp_flow_stats_pad2_F          = ProtoField.string("of13.flow_stats_pad2",          "Padding")
+ofp_flow_stats_cookie_F        = ProtoField.uint64("of13.flow_stats_cookie",        "Cookie", base.HEX)
+ofp_flow_stats_packet_count_F  = ProtoField.uint64("of13.flow_stats_packet_count",  "Packet count")
+ofp_flow_stats_byte_count_F    = ProtoField.uint64("of13.flow_stats_byte_count",    "Byte count")
+
 function ofp_flow_stats_request(buffer, pinfo, tree)
     local _table_id_range    = buffer(0,1)
-    local _pad1_range    = buffer(1,3)
+    local _pad1_range        = buffer(1,3)
     local _out_port_range    = buffer(4,4)
     local _out_group_range   = buffer(8,4)
-    local _pad2_range    = buffer(12,4)
+    local _pad2_range        = buffer(12,4)
     local _cookie_range      = buffer(16,8)
     local _cookie_mask_range = buffer(24,8)
     local pointer = 32
 
     local _table_id    = _table_id_range:uint()
-    local _pad1    = tostring(_pad1_range)
+    local _pad1        = tostring(_pad1_range)
     local _out_port    = _out_port_range:uint()
     local _out_group   = _out_group_range:uint()
-    local _pad2    = tostring(_pad2_range)
+    local _pad2        = tostring(_pad2_range)
     local _cookie      = _cookie_range:uint64()
     local _cookie_mask = _cookie_mask_range:uint64()
 
     tree:add(ofp_flow_stats_request_table_id_F   , _table_id_range   , _table_id   )
-    tree:add(ofp_flow_stats_request_pad1_F   , _pad1_range   , _pad1   )
+    tree:add(ofp_flow_stats_request_pad1_F       , _pad1_range       , _pad1       )
     tree:add(ofp_flow_stats_request_out_port_F   , _out_port_range   , _out_port   )
     tree:add(ofp_flow_stats_request_out_group_F  , _out_group_range  , _out_group  )
-    tree:add(ofp_flow_stats_request_pad2_F   , _pad2_range   , _pad2   )
+    tree:add(ofp_flow_stats_request_pad2_F       , _pad2_range       , _pad2       )
     tree:add(ofp_flow_stats_request_cookie_F     , _cookie_range     , _cookie     )
     tree:add(ofp_flow_stats_request_cookie_mask_F, _cookie_mask_range, _cookie_mask)
 
@@ -1629,14 +1708,14 @@ end
 function ofp_flow_stats(buffer, pinfo, tree)
     local _length_range        = buffer(0,2)
     local _table_id_range      = buffer(2,1)
-    local _pad1_range      = buffer(3,1)
+    local _pad1_range          = buffer(3,1)
     local _duration_sec_range  = buffer(4,4)
     local _duration_nsec_range = buffer(8,4)
     local _priority_range      = buffer(12,2)
     local _idle_timeout_range  = buffer(14,2)
     local _hard_timeout_range  = buffer(16,2)
     local _flags_range         = buffer(18,2)
-    local _pad2_range      = buffer(20,4)
+    local _pad2_range          = buffer(20,4)
     local _cookie_range        = buffer(24,8)
     local _packet_count_range  = buffer(32,8)
     local _byte_count_range    = buffer(40,8)
@@ -1644,32 +1723,32 @@ function ofp_flow_stats(buffer, pinfo, tree)
 
     local _length        = _length_range:uint()
     local _table_id      = _table_id_range:uint()
-    local _pad1      = tostring(_pad1_range)
+    local _pad1          = tostring(_pad1_range)
     local _duration_sec  = _duration_sec_range:uint()
     local _duration_nsec = _duration_nsec_range:uint()
     local _priority      = _priority_range:uint()
     local _idle_timeout  = _idle_timeout_range:uint()
     local _hard_timeout  = _hard_timeout_range:uint()
     local _flags         = _flags_range:uint()
-    local _pad2      = tostring(_pad2_range)
+    local _pad2          = tostring(_pad2_range)
     local _cookie        = _cookie_range:uint64()
     local _packet_count  = _packet_count_range:uint64()
     local _byte_count    = _byte_count_range:uint64()
 
-    local subtree = tree:add(ofp_flow_stats_request_F, buffer(0,_length))
-    subtree:add(ofp_flow_stats_request_length_F,        _length_range       , _length       )
-    subtree:add(ofp_flow_stats_request_table_id_F,      _table_id_range     , _table_id     )
-    subtree:add(ofp_flow_stats_request_pad1_F,      _pad1_range     , _pad1     )
-    subtree:add(ofp_flow_stats_request_duration_sec_F,  _duration_sec_range , _duration_sec )
-    subtree:add(ofp_flow_stats_request_duration_nsec_F, _duration_nsec_range, _duration_nsec)
-    subtree:add(ofp_flow_stats_request_priority_F,      _priority_range     , _priority     )
-    subtree:add(ofp_flow_stats_request_idle_timeout_F,  _idle_timeout_range , _idle_timeout )
-    subtree:add(ofp_flow_stats_request_hard_timeout_F,  _hard_timeout_range , _hard_timeout )
-    subtree:add(ofp_flow_stats_request_flags_F,         _flags_range        , _flags        )
-    subtree:add(ofp_flow_stats_request_pad2_F,      _pad2_range     , _pad2     )
-    subtree:add(ofp_flow_stats_request_cookie_F,        _cookie_range       , _cookie       )
-    subtree:add(ofp_flow_stats_request_packet_count_F,  _packet_count_range , _packet_count )
-    subtree:add(ofp_flow_stats_request_byte_count_F,    _byte_count_range   , _byte_count   )
+    local subtree = tree:add(ofp_flow_stats_F, buffer(0,_length))
+    subtree:add(ofp_flow_stats_length_F,        _length_range       , _length       )
+    subtree:add(ofp_flow_stats_table_id_F,      _table_id_range     , _table_id     )
+    subtree:add(ofp_flow_stats_pad1_F,          _pad1_range         , _pad1         )
+    subtree:add(ofp_flow_stats_duration_sec_F,  _duration_sec_range , _duration_sec )
+    subtree:add(ofp_flow_stats_duration_nsec_F, _duration_nsec_range, _duration_nsec)
+    subtree:add(ofp_flow_stats_priority_F,      _priority_range     , _priority     )
+    subtree:add(ofp_flow_stats_idle_timeout_F,  _idle_timeout_range , _idle_timeout )
+    subtree:add(ofp_flow_stats_hard_timeout_F,  _hard_timeout_range , _hard_timeout )
+    subtree:add(ofp_flow_stats_flags_F,         _flags_range        , _flags        )
+    subtree:add(ofp_flow_stats_pad2_F,          _pad2_range         , _pad2         )
+    subtree:add(ofp_flow_stats_cookie_F,        _cookie_range       , _cookie       )
+    subtree:add(ofp_flow_stats_packet_count_F,  _packet_count_range , _packet_count )
+    subtree:add(ofp_flow_stats_byte_count_F,    _byte_count_range   , _byte_count   )
 
     offset = ofp_match(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
     pointer = pointer + offset
@@ -1684,29 +1763,42 @@ function ofp_flow_stats(buffer, pinfo, tree)
 end
 
 -- 7.3.5.3 Aggregate Flow Statistics
+ofp_aggregate_stats_request_table_id_F    = ProtoField.uint8 ("of13.aggregate_stats_request_table_id",    "Tab;e ID")
+ofp_aggregate_stats_request_pad1_F        = ProtoField.string("of13.aggregate_stats_request_pad1",        "Padding")
+ofp_aggregate_stats_request_out_port_F    = ProtoField.uint32("of13.aggregate_stats_request_out_port",    "Out Port")
+ofp_aggregate_stats_request_out_group_F   = ProtoField.uint32("of13.aggregate_stats_request_out_group",   "Out Group")
+ofp_aggregate_stats_request_pad2_F        = ProtoField.string("of13.aggregate_stats_request_pad2",        "Padding")
+ofp_aggregate_stats_request_cookie_F      = ProtoField.uint64("of13.aggregate_stats_request_cookie",      "Cookie", base.HEX)
+ofp_aggregate_stats_request_cookie_mask_F = ProtoField.uint64("of13.aggregate_stats_request_cookie_mask", "Cookie Mask", base.HEX)
+                                                                    
+ofp_aggregate_stats_reply_packet_count_F = ProtoField.uint64("of13.aggregate_stats_reply_packet_count", "Packet count")
+ofp_aggregate_stats_reply_byte_count_F   = ProtoField.uint64("of13.aggregate_stats_reply_byte_count",   "Byte count")
+ofp_aggregate_stats_reply_flow_count_F   = ProtoField.uint32("of13.aggregate_stats_reply_flow_count",   "Flow count")
+ofp_aggregate_stats_reply_pad_F          = ProtoField.string("of13.aggregate_stats_reply_pad",          "Padding")
+
 function ofp_aggregate_stats_request(buffer, pinfo, tree)
     local _table_id_range    = buffer(0,1)
-    local _pad1_range    = buffer(1,3)
+    local _pad1_range        = buffer(1,3)
     local _out_port_range    = buffer(4,4)
     local _out_group_range   = buffer(8,4)
-    local _pad2_range    = buffer(12,4)
+    local _pad2_range        = buffer(12,4)
     local _cookie_range      = buffer(16,8)
     local _cookie_mask_range = buffer(24,8)
     local pointer = 32
 
     local _table_id    = _table_id_range:uint()
-    local _pad1    = tostring(_pad1_range)
+    local _pad1        = tostring(_pad1_range)
     local _out_port    = _out_port_range:uint()
     local _out_group   = _out_group_range:uint()
-    local _pad2    = tostring(_pad2_range)
+    local _pad2        = tostring(_pad2_range)
     local _cookie      = _cookie_range:uint64()
     local _cookie_mask = _cookie_mask_range:uint64()
 
     tree:add(ofp_aggregate_stats_request_table_id_F   , _table_id_range   , _table_id   )
-    tree:add(ofp_aggregate_stats_request_pad1_F   , _pad1_range   , _pad1   )
+    tree:add(ofp_aggregate_stats_request_pad1_F       , _pad1_range       , _pad1       )
     tree:add(ofp_aggregate_stats_request_out_port_F   , _out_port_range   , _out_port   )
     tree:add(ofp_aggregate_stats_request_out_group_F  , _out_group_range  , _out_group  )
-    tree:add(ofp_aggregate_stats_request_pad2_F   , _pad2_range   , _pad2   )
+    tree:add(ofp_aggregate_stats_request_pad2_F       , _pad2_range       , _pad2       )
     tree:add(ofp_aggregate_stats_request_cookie_F     , _cookie_range     , _cookie     )
     tree:add(ofp_aggregate_stats_request_cookie_mask_F, _cookie_mask_range, _cookie_mask)
 
@@ -1717,18 +1809,18 @@ function ofp_aggregate_stats_reply(buffer, pinfo, tree)
     local _packet_count_range = buffer(0,8)
     local _byte_count_range   = buffer(8,8)
     local _flow_count_range   = buffer(16,4)
-    local _pad_range      = buffer(20,4)
+    local _pad_range          = buffer(20,4)
     local pointer = 24
 
     local _packet_count = _packet_count_range:uint64()
     local _byte_count   = _byte_count_range:uint64()
     local _flow_count   = _flow_count_range:uint()
-    local _pad      = tostring(_pad_range)
+    local _pad          = tostring(_pad_range)
 
     tree:add(ofp_aggregate_stats_reply_packet_count_F, _packet_count_range, _packet_count)
     tree:add(ofp_aggregate_stats_reply_byte_count_F  , _byte_count_range  , _byte_count  )
     tree:add(ofp_aggregate_stats_reply_flow_count_F  , _flow_count_range  , _flow_count  )
-    tree:add(ofp_aggregate_stats_reply_pad_F     , _pad_range     , _pad     )
+    tree:add(ofp_aggregate_stats_reply_pad_F         , _pad_range         , _pad         )
 
     -- Flow Match Header dissector
     if buffer:len() > pointer then
@@ -1740,22 +1832,28 @@ function ofp_aggregate_stats_reply(buffer, pinfo, tree)
 end
 
 -- 7.3.5.4 Table Statistics
+ofp_table_stats_table_id_F      = ProtoField.uint8("of13.table_stats_table_id",       "Table ID")
+ofp_table_stats_pad_F           = ProtoField.string("of13.table_stats_pad",           "Padding")
+ofp_table_stats_active_count_F  = ProtoField.uint32("of13.table_stats_active_count",  "Active count")
+ofp_table_stats_lookup_count_F  = ProtoField.uint64("of13.table_stats_lookup_count",  "Lookup count")
+ofp_table_stats_matched_count_F = ProtoField.uint64("of13.table_stats_matched_count", "Matched count")
+
 function ofp_table_stats(buffer, pinfo, tree)
     local _table_id_range      = buffer(0,1)
-    local _pad_range       = buffer(1,3)
+    local _pad_range           = buffer(1,3)
     local _active_count_range  = buffer(4,4)
     local _lookup_count_range  = buffer(8,8)
     local _matched_count_range = buffer(16,8)
     local pointer = 24
 
     local _table_id      = _table_id_range:uint()
-    local _pad       = tostring(_pad_range)
+    local _pad           = tostring(_pad_range)
     local _active_count  = _active_count_range:uint()
     local _lookup_count  = _lookup_count_range:uint64()
     local _matched_count = _matched_count_range:uint64()
 
     tree:add(ofp_table_stats_table_id_F     , _table_id_range     , _table_id     )
-    tree:add(ofp_table_stats_pad_F      , _pad_range      , _pad      )
+    tree:add(ofp_table_stats_pad_F          , _pad_range          , _pad          )
     tree:add(ofp_table_stats_active_count_F , _active_count_range , _active_count )
     tree:add(ofp_table_stats_lookup_count_F , _lookup_count_range , _lookup_count )
     tree:add(ofp_table_stats_matched_count_F, _matched_count_range, _matched_count)
@@ -1764,10 +1862,19 @@ function ofp_table_stats(buffer, pinfo, tree)
 end
 
 -- 7.3.5.5 Table Features
+ofp_table_features_length_F             = ProtoField.uint16("of13.table_features_length",         "Length")
+ofp_table_features_table_id_F           = ProtoField.uint8 ("of13.table_features_table_id",       "Table ID")
+ofp_table_features_pad_F                = ProtoField.string("of13.table_features_pad",            "Padding")
+ofp_table_features_name_F               = ProtoField.uint64("of13.table_features_name",           "Name")
+ofp_table_features_metadata_match_F     = ProtoField.uint64("of13.table_features_metadata_match", "Metadata match")
+ofp_table_features_metadata_write_F     = ProtoField.uint64("of13.table_features_metadata_write", "Metadata write")
+ofp_table_features_config_F             = ProtoField.uint32("of13.table_features_config",         "Config")
+ofp_table_features_max_entries_F        = ProtoField.uint32("of13.table_features_max_entries",    "Max entries")
+
 function ofp_table_features(buffer, pinfo, tree)
     local _length_range         = buffer(0,2)
     local _table_id_range       = buffer(2,1)
-    local _pad_range        = buffer(3,5)
+    local _pad_range            = buffer(3,5)
     local _name_range           = buffer(8,32)
     local _metadata_match_range = buffer(40,8)
     local _metadata_write_range = buffer(48,8)
@@ -1777,21 +1884,21 @@ function ofp_table_features(buffer, pinfo, tree)
 
     local _length         = _length_range:uint()
     local _table_id       = _table_id_range:uint()
-    local _pad        = tostring(_pad_range)
+    local _pad            = tostring(_pad_range)
     local _name           = tostring(_name_range)
     local _metadata_match = _metadata_match_range:uint64()
     local _metadata_write = _metadata_write_range:uint64()
     local _config         = _config_range:uint()
     local _max_entries    = _max_entries_range:uint()
 
-    tree:add(ofp_table_features_length_F        , _length_range        , _length        )
-    tree:add(ofp_table_features_table_id_F      , _table_id_range      , _table_id      )
-    tree:add(ofp_table_features_pad_F       , _pad_range       , _pad       )
-    tree:add(ofp_table_features_name_F          , _name_range          , _name          )
-    tree:add(ofp_table_features_metadata_ofp_match_F, _metadata_match_range, _metadata_match)
-    tree:add(ofp_table_features_metadata_write_F, _metadata_write_range, _metadata_write)
-    tree:add(ofp_table_features_config_F        , _config_range        , _config        )
-    tree:add(ofp_table_features_max_entries_F   , _max_entries_range   , _max_entries   )
+    tree:add(ofp_table_features_length_F         , _length_range        , _length        )
+    tree:add(ofp_table_features_table_id_F       , _table_id_range      , _table_id      )
+    tree:add(ofp_table_features_pad_F            , _pad_range           , _pad           )
+    tree:add(ofp_table_features_name_F           , _name_range          , _name          )
+    tree:add(ofp_table_features_metadata_match_F , _metadata_match_range, _metadata_match)
+    tree:add(ofp_table_features_metadata_write_F , _metadata_write_range, _metadata_write)
+    tree:add(ofp_table_features_config_F         , _config_range        , _config        )
+    tree:add(ofp_table_features_max_entries_F    , _max_entries_range   , _max_entries   )
 
     -- XXX : ofp_table_feature_prop_header
 
@@ -1804,9 +1911,9 @@ end
 
 -- 7.3.5.6 Port Statistics
 ofp_port_stats_request_port_F        = ProtoField.uint32("of13.port_stats_request_port",          "Port")
-ofp_port_stats_request_pad_F     = ProtoField.string("of13.port_stats_request_pad",       "Padding")
+ofp_port_stats_request_pad_F         = ProtoField.string("of13.port_stats_request_pad",           "Padding")
 ofp_port_stats_reply_port_F          = ProtoField.uint32("of13.port_stats_request_port",          "Port")
-ofp_port_stats_reply_pad_F       = ProtoField.string("of13.port_stats_request_pad",       "Padding")
+ofp_port_stats_reply_pad_F           = ProtoField.string("of13.port_stats_request_pad",           "Padding")
 ofp_port_stats_reply_rx_packets_F    = ProtoField.uint64("of13.port_stats_request_rx_packets",    "RX packets")
 ofp_port_stats_reply_tx_packets_F    = ProtoField.uint64("of13.port_stats_request_tx_packets",    "TX packets")
 ofp_port_stats_reply_rx_bytes_F      = ProtoField.uint64("of13.port_stats_request_rx_bytes",      "RX bytes")
@@ -1823,12 +1930,12 @@ ofp_port_stats_reply_duration_sec_F  = ProtoField.uint32("of13.port_stats_reques
 ofp_port_stats_reply_duration_nsec_F = ProtoField.uint32("of13.port_stats_request_duration_nsec", "Port alive [nsec]")
 
 function ofp_port_stats_request(buffer, pinfo, tree)
-    local _port_range    = buffer(0,4)
-    local _pad_range = buffer(4,4)
+    local _port_range = buffer(0,4)
+    local _pad_range  = buffer(4,4)
     local pointer = 8
 
-    local _port    = _port_range:uint()
-    local _pad = tostring(_pad_range)
+    local _port = _port_range:uint()
+    local _pad  = tostring(_pad_range)
 
     local _port_F = tree:add(ofp_port_stats_request_port_F, _port_range, _port)
     if not ofp_port_no[_port] == nil then
@@ -1840,7 +1947,7 @@ end
 
 function ofp_port_stats(buffer, pinfo, tree)
     local _port_range          = buffer(0,4)
-    local _pad_range       = buffer(4,4)
+    local _pad_range           = buffer(4,4)
     local _rx_packets_range    = buffer(8,8)
     local _tx_packets_range    = buffer(16,8)
     local _rx_bytes_range      = buffer(24,8)
@@ -1858,7 +1965,7 @@ function ofp_port_stats(buffer, pinfo, tree)
     local pointer = 112
 
     local _port          = _port_range:uint()
-    local _pad       = tostring(_pad_range)
+    local _pad           = tostring(_pad_range)
     local _rx_packets    = _rx_packets_range:uint64()
     local _tx_packets    = _tx_packets_range:uint64()
     local _rx_bytes      = _rx_bytes_range:uint64()
@@ -1878,7 +1985,7 @@ function ofp_port_stats(buffer, pinfo, tree)
     if not ofp_port_no[_port] == nil then
         _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
-    tree:add(ofp_port_stats_reply_pad_F      , _pad_range      , _pad      )
+    tree:add(ofp_port_stats_reply_pad_F          , _pad_range          , _pad          )
     tree:add(ofp_port_stats_reply_rx_packets_F   , _rx_packets_range   , _rx_packets   )
     tree:add(ofp_port_stats_reply_tx_packets_F   , _tx_packets_range   , _tx_packets   )
     tree:add(ofp_port_stats_reply_rx_bytes_F     , _rx_bytes_range     , _rx_bytes     )
@@ -1900,6 +2007,17 @@ end
 -- See 7.2.1
 
 -- 7.3.5.8 Queue Statistics
+ofp_queue_stats_request_port_no_F  = ProtoField.uint32("of13.queue_stats_request_port_no",  "Port No")
+ofp_queue_stats_request_queue_id_F = ProtoField.uint32("of13.queue_stats_request_queue_id", "Queue ID")
+
+ofp_queue_stats_port_no_F       = ProtoField.uint32("of13.queue_stats_port_no",       "Port No")
+ofp_queue_stats_queue_id_F      = ProtoField.uint32("of13.queue_stats_queue_id",      "Queue ID")
+ofp_queue_stats_tx_bytes_F      = ProtoField.uint64("of13.queue_stats_tx_bytes",      "TX Bytes")
+ofp_queue_stats_tx_packets_F    = ProtoField.uint64("of13.queue_stats_tx_packets",    "TX Packets")
+ofp_queue_stats_tx_errors_F     = ProtoField.uint64("of13.queue_stats_tx_errors",     "TX Errors")
+ofp_queue_stats_duration_sec_F  = ProtoField.uint32("of13.queue_stats_duration_sec",  "Duration sec")
+ofp_queue_stats_duration_nsec_F = ProtoField.uint32("of13.queue_stats_duration_nsec", "Duration nsec")
+
 function ofp_queue_stats_request(buffer, pinfo, tree)
     local _port_no_range  = buffer(0,4)
     local _queue_id_range = buffer(4,4)
@@ -1944,26 +2062,42 @@ function ofp_queue_stats(buffer, pinfo, tree)
 end
 
 -- 7.3.5.9 Group Statistics
+ofp_group_stats_request_group_id_F = ProtoField.uint32("of13.group_stats_request_group_id", "Group ID")
+ofp_group_stats_request_pad_F      = ProtoField.uint32("of13.group_stats_request_pad",      "Padding")
+
+ofp_group_stats_length_F        = ProtoField.uint16("of13.group_stats_length",        "Length")
+ofp_group_stats_pad_F           = ProtoField.string("of13.group_stats_pad",           "Padding")
+ofp_group_stats_group_id_F      = ProtoField.uint32("of13.group_stats_group_id",      "Group ID")
+ofp_group_stats_ref_count_F     = ProtoField.uint32("of13.group_stats_ref_count",     "Ref count")
+ofp_group_stats_pad2_F          = ProtoField.string("of13.group_stats_pad2",          "Padding")
+ofp_group_stats_packet_count_F  = ProtoField.uint64("of13.group_stats_packet_count",  "Packet count")
+ofp_group_stats_byte_count_F    = ProtoField.uint64("of13.group_stats_byte_count",    "Byte count")
+ofp_group_stats_duration_sec_F  = ProtoField.uint32("of13.group_stats_duration_sec",  "Duration sec")
+ofp_group_stats_duration_nsec_F = ProtoField.uint32("of13.group_stats_duration_nsec", "Duration nsec")
+
+ofp_bucket_counter_packet_count_F = ProtoField.uint64("of13.bucket_counter_packet_count", "Packet count")
+ofp_bucket_counter_byte_count_F   = ProtoField.uint64("of13.bucket_counter_byte_count"  , "Byte count")
+
 function ofp_group_stats_request(buffer, pinfo, tree)
     local _group_id_range = buffer(0,4)
-    local _pad_range  = buffer(4,4)
+    local _pad_range      = buffer(4,4)
     local pointer = 8
 
     local _group_id = _group_id_range:uint()
-    local _pad  = tostring(_pad_range)
+    local _pad      = tostring(_pad_range)
 
     tree:add(ofp_group_stats_request_group_id_F, _group_id_range, _group_id) 
-    tree:add(ofp_group_stats_request_pad_F , _pad_range , _pad )
+    tree:add(ofp_group_stats_request_pad_F     , _pad_range     , _pad )
 
     return pointer
 end
 
 function ofp_group_stats(buffer, pinfo, tree)
     local _length_range        = buffer(0,2)
-    local _pad_range       = buffer(2,2)
+    local _pad_range           = buffer(2,2)
     local _group_id_range      = buffer(4,4)
     local _ref_count_range     = buffer(8,4)
-    local _pad_range       = buffer(12,4)
+    local _pad2_range          = buffer(12,4)
     local _packet_count_range  = buffer(16,8)
     local _byte_count_range    = buffer(24,8)
     local _duration_sec_range  = buffer(32,4)
@@ -1971,20 +2105,20 @@ function ofp_group_stats(buffer, pinfo, tree)
     local pointer = 40
 
     local _length        = _length_range:uint()
-    local _pad       = _pad_range:uint()
+    local _pad           = _pad_range:uint()
     local _group_id      = _group_id_range:uint()
     local _ref_count     = _ref_count_range:uint()
-    local _pad       = _pad_range:uint()
+    local _pad2          = _pad2_range:uint()
     local _packet_count  = _packet_count_range:uint64()
     local _byte_count    = _byte_count_range:uint64()
     local _duration_sec  = _duration_sec_range:uint()
     local _duration_nsec = _duration_nsec_range:uint()
 
     tree:add(ofp_group_stats_length_F       , _length_range       , _length       )
-    tree:add(ofp_group_stats_pad_F      , _pad_range      , _pad      )
+    tree:add(ofp_group_stats_pad_F          , _pad_range          , _pad          )
     tree:add(ofp_group_stats_group_id_F     , _group_id_range     , _group_id     )
     tree:add(ofp_group_stats_ref_count_F    , _ref_count_range    , _ref_count    )
-    tree:add(ofp_group_stats_pad_F      , _pad_range      , _pad      )
+    tree:add(ofp_group_stats_pad_F          , _pad2_range         , _pad2         )
     tree:add(ofp_group_stats_packet_count_F , _packet_count_range , _packet_count )
     tree:add(ofp_group_stats_byte_count_F   , _byte_count_range   , _byte_count   )
     tree:add(ofp_group_stats_duration_sec_F , _duration_sec_range , _duration_sec )
@@ -2019,6 +2153,17 @@ function ofp_group_desc(buffer, pinfo, tree)
 end
 
 -- 7.3.5.11 Group Features
+ofp_group_features_types_F        = ProtoField.uint32("of13.group_features_types",        "Type")
+ofp_group_features_capabilities_F = ProtoField.uint32("of13.group_features_capabilities", "Capabilities")
+ofp_group_features_max_groups1_F  = ProtoField.uint32("of13.group_features_max_groups1",  "Max group1")
+ofp_group_features_max_groups2_F  = ProtoField.uint32("of13.group_features_max_groups2",  "Max group2")
+ofp_group_features_max_groups3_F  = ProtoField.uint32("of13.group_features_max_groups3",  "Max group3")
+ofp_group_features_max_groups4_F  = ProtoField.uint32("of13.group_features_max_groups4",  "Max group4")
+ofp_group_features_actions1_F     = ProtoField.uint32("of13.group_features_actions1",     "Features action1")
+ofp_group_features_actions2_F     = ProtoField.uint32("of13.group_features_actions2",     "Features action2")
+ofp_group_features_actions3_F     = ProtoField.uint32("of13.group_features_actions3",     "Features action3")
+ofp_group_features_actions4_F     = ProtoField.uint32("of13.group_features_actions4",     "Features action4")
+
 function ofp_group_features(buffer, pinfo, tree)
     local _types_range         = buffer(0,4)
     local _capabilities_range  = buffer(4,4)
@@ -2059,16 +2204,31 @@ function ofp_group_features(buffer, pinfo, tree)
 end
 
 -- 7.3.5.12 Meter Statistics
+ofp_meter_multipart_requests_meter_id_F = ProtoField.uint32("of13.meter_multipart_requests_meter_id", "Meter ID")
+ofp_meter_multipart_requests_pad_F      = ProtoField.string("of13.meter_multipart_requests_pad",      "Padding")
+
+ofp_meter_stats_meter_id_F        = ProtoField.uint32("of13.meter_stats_meter_id",        "Meter ID")
+ofp_meter_stats_length_F          = ProtoField.uint32("of13.meter_stats_length",          "Length")
+ofp_meter_stats_pad_F             = ProtoField.uint32("of13.meter_stats_pad",             "Padding")
+ofp_meter_stats_flow_count_F      = ProtoField.uint32("of13.meter_stats_flow_count",      "Flow count")
+ofp_meter_stats_packet_in_count_F = ProtoField.uint32("of13.meter_stats_packet_in_count", "Packet in count")
+ofp_meter_stats_byte_in_count_F   = ProtoField.uint32("of13.meter_stats_byte_in_count",   "Byte in count")
+ofp_meter_stats_duration_sec_F    = ProtoField.uint32("of13.meter_stats_duration_sec",    "Duration sec")
+ofp_meter_stats_duration_nsec_F   = ProtoField.uint32("of13.meter_stats_duration_nsec",   "Duration nsec")
+
+ofp_meter_band_stats_packet_band_count_F = ProtoField.uint32("of13.meter_band_stats_packet_band_count", "Packet band count")
+ofp_meter_band_stats_byte_band_count_F   = ProtoField.uint32("of13.meter_band_stats_byte_band_count",   "Byte band count")
+
 function ofp_meter_multipart_request(buffer, pinfo, tree)
     local _meter_id_range = buffer(0,4)
-    local _pad_range  = buffer(4,4)
+    local _pad_range      = buffer(4,4)
     local pointer = 8
 
     local _meter_id = _meter_id_range:uint()
-    local _pad  = tostring(_pad_range)
+    local _pad      = tostring(_pad_range)
 
     tree:add(ofp_meter_multipart_requests_meter_id_F, _meter_id_range, _meter_id) 
-    tree:add(ofp_meter_multipart_requests_pad_F , _pad_range , _pad )
+    tree:add(ofp_meter_multipart_requests_pad_F     , _pad_range     , _pad )
 
     return pointer
 end
@@ -2076,7 +2236,7 @@ end
 function ofp_meter_stats(buffer, pinfo, tree)
     local _meter_id_range        = buffer(0,4)
     local _length_range          = buffer(0,2)
-    local _pad_range         = buffer(0,6)
+    local _pad_range             = buffer(0,6)
     local _flow_count_range      = buffer(0,4)
     local _packet_in_count_range = buffer(0,8)
     local _byte_in_count_range   = buffer(0,8)
@@ -2086,7 +2246,7 @@ function ofp_meter_stats(buffer, pinfo, tree)
 
     local _meter_id        = _meter_id_range:uint()
     local _length          = _length_range:uint()
-    local _pad         = tostring(_pad_range)
+    local _pad             = tostring(_pad_range)
     local _flow_count      = _flow_count_range:uint()
     local _packet_in_count = _packet_in_count_range:uint64()
     local _byte_in_count   = _byte_in_count_range:uint64()
@@ -2095,7 +2255,7 @@ function ofp_meter_stats(buffer, pinfo, tree)
 
     tree:add(ofp_meter_stats_meter_id_F       , _meter_id_range       , _meter_id       )
     tree:add(ofp_meter_stats_length_F         , _length_range         , _length         )
-    tree:add(ofp_meter_stats_pad_F        , _pad_range        , _pad        )
+    tree:add(ofp_meter_stats_pad_F            , _pad_range            , _pad            )
     tree:add(ofp_meter_stats_flow_count_F     , _flow_count_range     , _flow_count     )
     tree:add(ofp_meter_stats_packet_in_count_F, _packet_in_count_range, _packet_in_count)
     tree:add(ofp_meter_stats_byte_in_count_F  , _byte_in_count_range  , _byte_in_count  )
@@ -2115,8 +2275,8 @@ function ofp_meter_band_stats(buffer, pinfo, tree)
     local _packet_band_count = _packet_band_count_range:uint64()
     local _byte_band_count   = _byte_band_count_range:uint64()
 
-    tree:add(ofp_meter_band_stats_packet_band_count_F , _packet_band_count_range, _packet_band_count)
-    tree:add(ofp_meter_band_stats_byte_band_count_F   , _byte_band_count_range  , _byte_band_count  )
+    tree:add(ofp_meter_band_stats_packet_band_count_F, _packet_band_count_range, _packet_band_count)
+    tree:add(ofp_meter_band_stats_byte_band_count_F  , _byte_band_count_range  , _byte_band_count  )
 
     return pointer
 end
@@ -2150,7 +2310,7 @@ ofp_packet_out_F             = ProtoField.string("of13.packet_out",            "
 ofp_packet_out_buffer_id_F   = ProtoField.uint32("of13.packet_out_buffer_id",  "Datapath ID")
 ofp_packet_out_in_port_F     = ProtoField.uint32("of13.packet_out_in_port",    "Input port")
 ofp_packet_out_actions_len_F = ProtoField.uint16("of13.packet_out_action_len", "Size of action array")
-ofp_packet_out_pad_F     = ProtoField.string("of13.packet_out_pad",    "Padding")
+ofp_packet_out_pad_F         = ProtoField.string("of13.packet_out_pad",        "Padding")
 
 function ofp_packet_out(buffer, pinfo, tree)
     local _buffer_id_range   = buffer(0,4)
@@ -2212,7 +2372,7 @@ ofp_packet_in_total_len_F = ProtoField.uint16("of13.packet_in_total_len", "Frame
 ofp_packet_in_reason_F    = ProtoField.uint8("of13.packet_in_reason",     "Reason")
 ofp_packet_in_table_id_F  = ProtoField.uint8("of13.packet_in_table_id",   "Table ID")
 ofp_packet_in_cookie_F    = ProtoField.uint64("of13.packet_in_cookie",    "Cookie", base.HEX)
-ofp_packet_in_pad_F   = ProtoField.string("of13.packet_in_pad",   "Padding")
+ofp_packet_in_pad_F       = ProtoField.string("of13.packet_in_pad",       "Padding")
 
 ofp_packet_in_reason = {
     [0] = "OFPR_NO_MATCH",    -- No matching flow (table-miss flow entry).
@@ -2372,6 +2532,8 @@ of13_proto.fields = {
     ofp_action_push_pad_F,
     ofp_action_pop_mpls_ethertype_F,
     ofp_action_pop_mpls_pad_F,
+    ofp_action_set_field_type_F,
+    ofp_action_set_field_len_F,
     ofp_action_experimenter_F,
 
     -- 7.3.1 Handshake
@@ -2393,9 +2555,13 @@ of13_proto.fields = {
     ofp_switch_features_capabilities_port_blocked_F,
 
     -- 7.3.2 Switch Configuratiion
-    ofp_config_F,
     ofp_config_flags_F,
     ofp_config_miss_send_len_F,
+
+    -- 7.3.3 Flow Table Configuration
+    ofp_table_mod_table_id_F,
+    ofp_table_mod_pad_F,
+    ofp_table_mod_config_F,
 
     -- 7.3.4 Modify State Messages
     ofp_flow_mod_F,
@@ -2418,11 +2584,41 @@ of13_proto.fields = {
     ofp_flow_mod_flags_no_pkt_counts_F,
     ofp_flow_mod_flags_no_byt_counts_F,
 
+    ofp_group_mod_command_F,
+    ofp_group_mod_type_F,
+    ofp_group_mod_pad_F,
+    ofp_group_mod_group_id_F,
+
+    ofp_bucket_len_F,
+    ofp_bucket_weight_F,
+    ofp_bucket_watch_port_F,
+    ofp_bucket_watch_group_F,
+    ofp_bucket_pad_F,
+
+    ofp_port_mod_port_no_F,
+    ofp_port_mod_pad_F,
+    ofp_port_mod_hw_addr_F,
+    ofp_port_mod_pad2_F,
+    ofp_port_mod_config_F,
+    ofp_port_mod_mask_F,
+    ofp_port_mod_advertise_F,
+    ofp_port_mod_pad3_F,
+
+    ofp_meter_mod_command_F,
+    ofp_meter_mod_flags_F,
+    ofp_meter_mod_meter_id_F,
+
+    ofp_meter_band_header_type_F,
+    ofp_meter_band_header_len_F,
+    ofp_meter_band_header_rate_F,
+    ofp_meter_band_header_burst_size_F,
+
     -- 7.3.5 Multipart Messages
     ofp_multipart_request_F,
     ofp_multipart_request_type_F,
     ofp_multipart_request_flags_F,
     ofp_multipart_request_pad_F,
+
     ofp_multipart_reply_F,
     ofp_multipart_reply_type_F,
     ofp_multipart_reply_flags_F,
@@ -2434,6 +2630,61 @@ of13_proto.fields = {
     ofp_desc_sw_desc_F,
     ofp_desc_serial_num_F,
     ofp_desc_dp_desc_F,
+
+    -- 7.3.5.2 Individual Flow Statistics
+    ofp_flow_stats_request_table_id_F,
+    ofp_flow_stats_request_pad1_F,
+    ofp_flow_stats_request_out_port_F,
+    ofp_flow_stats_request_out_group_F,
+    ofp_flow_stats_request_pad2_F,
+    ofp_flow_stats_request_cookie_F,
+    ofp_flow_stats_request_cookie_mask_F,
+
+    ofp_flow_stats_F,
+    ofp_flow_stats_length_F,
+    ofp_flow_stats_table_id_F,
+    ofp_flow_stats_pad1_F,
+    ofp_flow_stats_duration_sec_F,
+    ofp_flow_stats_duration_nsec_F,
+    ofp_flow_stats_priority_F,
+    ofp_flow_stats_idle_timeout_F,
+    ofp_flow_stats_hard_timeout_F,
+    ofp_flow_stats_flags_F,
+    ofp_flow_stats_pad2_F,
+    ofp_flow_stats_cookie_F,
+    ofp_flow_stats_packet_count_F,
+    ofp_flow_stats_byte_count_F,
+
+    -- 7.3.5.3 Aggregate Flow Statistics
+    ofp_aggregate_stats_request_table_id_F,
+    ofp_aggregate_stats_request_pad1_F,
+    ofp_aggregate_stats_request_out_port_F,
+    ofp_aggregate_stats_request_out_group_F,
+    ofp_aggregate_stats_request_pad2_F,
+    ofp_aggregate_stats_request_cookie_F,
+    ofp_aggregate_stats_request_cookie_mask_F,
+
+    ofp_aggregate_stats_reply_packet_count_F ,
+    ofp_aggregate_stats_reply_byte_count_F,
+    ofp_aggregate_stats_reply_flow_count_F,
+    ofp_aggregate_stats_reply_pad_F,
+
+    -- 7.3.5.4 Table Statistics
+    ofp_table_stats_table_id_F,
+    ofp_table_stats_pad_F,
+    ofp_table_stats_active_count_F,
+    ofp_table_stats_lookup_count_F,
+    ofp_table_stats_matched_count_F,
+
+    -- 7.3.5.5 Table Features
+    ofp_table_features_length_F,
+    ofp_table_features_table_id_F,
+    ofp_table_features_pad_F,
+    ofp_table_features_name_F,
+    ofp_table_features_metadata_match_F,
+    ofp_table_features_metadata_write_F,
+    ofp_table_features_config_F,
+    ofp_table_features_max_entries_F,
 
     -- 7.3.5.6 Port Statistics
     ofp_port_stats_request_port_F,
@@ -2454,6 +2705,63 @@ of13_proto.fields = {
     ofp_port_stats_reply_collisions_F,
     ofp_port_stats_reply_duration_sec_F,
     ofp_port_stats_reply_duration_nsec_F,
+
+    -- 7.3.5.8 Queue Statistics
+    ofp_queue_stats_request_port_no_F,
+    ofp_queue_stats_request_queue_id_F,
+
+    ofp_queue_stats_port_no_F,
+    ofp_queue_stats_queue_id_F,
+    ofp_queue_stats_tx_bytes_F,
+    ofp_queue_stats_tx_packets_F,
+    ofp_queue_stats_tx_errors_F,
+    ofp_queue_stats_duration_sec_F,
+    ofp_queue_stats_duration_nsec_F,
+
+    -- 7.3.5.9 Group Statistics
+    ofp_group_stats_request_group_id_F,
+    ofp_group_stats_request_pad_F,
+
+    ofp_group_stats_length_F,
+    ofp_group_stats_pad_F,
+    ofp_group_stats_group_id_F,
+    ofp_group_stats_ref_count_F,
+    ofp_group_stats_pad2_F,
+    ofp_group_stats_packet_count_F,
+    ofp_group_stats_byte_count_F,
+    ofp_group_stats_duration_sec_F,
+    ofp_group_stats_duration_nsec_F,
+
+    ofp_bucket_counter_packet_count_F,
+    ofp_bucket_counter_byte_count_F,
+
+    -- 7.3.5.11 Group Features
+    ofp_group_features_types_F,
+    ofp_group_features_capabilities_F,
+    ofp_group_features_max_groups1_F,
+    ofp_group_features_max_groups2_F,
+    ofp_group_features_max_groups3_F,
+    ofp_group_features_max_groups4_F,
+    ofp_group_features_actions1_F,
+    ofp_group_features_actions2_F,
+    ofp_group_features_actions3_F,
+    ofp_group_features_actions4_F,
+
+    -- 7.3.5.12 Meter Statistics
+    ofp_meter_multipart_requests_meter_id_F ,
+    ofp_meter_multipart_requests_pad_F,
+
+    ofp_meter_stats_meter_id_F,
+    ofp_meter_stats_length_F,
+    ofp_meter_stats_pad_F,
+    ofp_meter_stats_flow_count_F,
+    ofp_meter_stats_packet_in_count_F,
+    ofp_meter_stats_byte_in_count_F,
+    ofp_meter_stats_duration_sec_F,
+    ofp_meter_stats_duration_nsec_F,
+
+    ofp_meter_band_stats_packet_band_count_F,
+    ofp_meter_band_stats_byte_band_count_F,
 
     -- 7.3.7 Packet-Out Message
     ofp_packet_out_F,
