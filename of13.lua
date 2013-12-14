@@ -124,7 +124,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
             return
 
         elseif ofp_type[_type] == "OFPT_ERROR" then
-            return
+            ofp_error_msg(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_ECHO_REQUEST" then
             -- 7.5.2 Echo Request
@@ -142,7 +142,7 @@ function of13_proto.dissector(buffer, pinfo, tree)
             return
 
         elseif ofp_type[_type] == "OFPT_EXPERIMENTER" then
-            return
+            ofp_experimenter_header(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_FEATURES_REQUEST" then
             -- 7.3.1 Handshake
@@ -164,10 +164,10 @@ function of13_proto.dissector(buffer, pinfo, tree)
             ofp_packet_in(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_FLOW_REMOVED" then
-            return
+            ofp_flow_removed(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_PORT_STATUS" then
-            return
+            ofp_port_status(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_PACKET_OUT" then
             ofp_packet_out(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
@@ -176,13 +176,13 @@ function of13_proto.dissector(buffer, pinfo, tree)
             ofp_flow_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_GROUP_MOD" then
-            return
+            ofp_group_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_PORT_MOD" then
-            return
+            ofp_port_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_TABLE_MOD" then
-            return
+            ofp_table_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_MULTIPART_REQUEST" then
             ofp_multipart_request(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
@@ -190,35 +190,33 @@ function of13_proto.dissector(buffer, pinfo, tree)
         elseif ofp_type[_type] == "OFPT_MULTIPART_REPLY" then
             ofp_multipart_reply(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
-        elseif ofp_type[_type] == "OFPT_BARRIER_REQUEST" then
-            return
-
-        elseif ofp_type[_type] == "OFPT_BARRIER_REPLY" then
+        elseif ofp_type[_type] == "OFPT_BARRIER_REQUEST" or
+               ofp_type[_type] == "OFPT_BARRIER_REPLY" then
+            -- 7.3.8 Barrier Message
+            -- This message has no body.
             return
 
         elseif ofp_type[_type] == "OFPT_QUEUE_GET_CONFIG_REQUEST" then
-            return
+            ofp_queue_get_config_request(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_QUEUE_GET_CONFIG_REPLY" then
-            return
+            ofp_queue_get_config_reply(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
-        elseif ofp_type[_type] == "OFPT_ROLE_REQUEST" then
-            return
-
-        elseif ofp_type[_type] == "OFPT_ROLE_REPLY" then
-            return
+        elseif ofp_type[_type] == "OFPT_ROLE_REQUEST" or
+               ofp_type[_type] == "OFPT_ROLE_REPLY" then
+            ofp_role_request(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_GET_ASYNC_REQUEST" then
+            -- There is no body for OFPT_GET_ASYNC_REQUEST beyond the OpenFlow header.
             return
 
-        elseif ofp_type[_type] == "OFPT_GET_ASYNC_REPLY" then
-            return
-
-        elseif ofp_type[_type] == "OFPT_SET_ASYNC" then
-            return
+        elseif ofp_type[_type] == "OFPT_GET_ASYNC_REPLY" or
+               ofp_type[_type] == "OFPT_SET_ASYNC" then
+            -- The OFPT_SET_ASYNC and OFPT_GET_ASYNC_REPLY messages have the following format:  
+            ofp_async_config(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         elseif ofp_type[_type] == "OFPT_METER_MOD" then
-            return
+            ofp_meter_mod(buffer(pointer,buffer:len()-pointer), pinfo, of13_tree)
 
         end
     end
@@ -1306,7 +1304,7 @@ function ofp_port_mod(buffer, pinfo, tree)
     local _pad2      = tostring(_pad2_range)
     local _config    = _config_range:uint()
     local _mask      = _mask_range:uint()
-    local _advertise = _advertise_range
+    local _advertise = _advertise_range:uint()
     local _pad3      = tostring(_pad3_range)
 
     tree:add(ofp_port_mod_port_no_F  , _port_no_range  , _port_no  )
