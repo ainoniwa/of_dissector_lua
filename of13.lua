@@ -444,12 +444,19 @@ function ofp_match(buffer, pinfo, tree)
     local _length = _length_range:uint()
 
     local subtree = tree:add(ofp_match_F, buffer(0,_length), "Flow Match Header")
-    subtree:add(ofp_match_type_F,   _type_range,   _type):append_text(" (" .. ofp_match_type_string[_type] .. ")")
+    local _type_F = subtree:add(ofp_match_type_F,   _type_range,   _type)
+    if ofp_match_type_string[_type] ~= nil then
+        _type_F:append_text(" (" .. ofp_match_type_string[_type] .. ")")
+    end
     subtree:add(ofp_match_length_F, _length_range, _length)
 
     while pointer < _length do
-        offset = ofp_oxm_field(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
-        pointer = pointer + offset
+        if ofp_match_type_string[_type] ~= nil then
+            offset = ofp_oxm_field(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+            pointer = pointer + offset
+        else
+            break
+        end
     end
 
     local _pad_range = buffer(pointer, math.ceil(_length/8)*8 - pointer)
@@ -704,7 +711,10 @@ function ofp_instruction(buffer, pinfo, tree)
     local _length = _length_range:uint()
 
     local subtree = tree:add(ofp_instruction_F, buffer(0,_length), "Flow Instruction")
-    subtree:add(ofp_instruction_type_F,   _type_range,   _type):append_text(" (" .. ofp_instruction_type[_type] .. ")")
+    local _type_F = subtree:add(ofp_instruction_type_F,   _type_range,   _type)
+    if ofp_instruction_type[_type] ~= nil then
+        _type_F:append_text(" (" .. ofp_instruction_type[_type] .. ")")
+    end
     subtree:add(ofp_instruction_length_F, _length_range, _length)
 
     if _length < 8 then
@@ -713,26 +723,26 @@ function ofp_instruction(buffer, pinfo, tree)
 
     if ofp_instruction_type[_type] == "OFPIT_GOTO_TABLE" then
         local _table_id_range = buffer(pointer,1)
-        local _pad_range  = buffer(pointer+1,3)
+        local _pad_range      = buffer(pointer+1,3)
         pointer = pointer + 4
 
         local _table_id = _table_id_range:uint()
-        local _pad  = tostring(_pad_range)
+        local _pad      = tostring(_pad_range)
 
         subtree:add(ofp_instruction_table_id_F, _table_id_range, _table_id)
-        subtree:add(ofp_instruction_pad_F,  _pad_range,  _pad)
+        subtree:add(ofp_instruction_pad_F     , _pad_range     ,  _pad    )
 
     elseif ofp_instruction_type[_type] == "OFPIT_WRITE_METADATA" then
-        local _pad_range       = buffer(pointer,4)
+        local _pad_range           = buffer(pointer,4)
         local _metadata_range      = buffer(pointer+4,8)
         local _metadata_mask_range = buffer(pointer+12,8)
         pointer = pointer + 20
 
-        local _pad       = tostring(_pad_range)
+        local _pad           = tostring(_pad_range)
         local _metadata      = _metadata_range:uint64()
         local _metadata_mask = _metadata_mask_range:uint64()
 
-        subtree:add(ofp_instruction_pad_F,  _pad_range,  _pad)
+        subtree:add(ofp_instruction_pad_F     , _pad_range     , _pad)
         subtree:add(ofp_instruction_metadata_F, _metadata_range, _metadata)
         subtree:add(ofp_instruction_metadata_mask_F, _metadata_mask_range, _metadata_mask)
 
@@ -820,7 +830,10 @@ function ofp_action_header(buffer, pinfo, tree)
     local _length = _length_range:uint()
 
     local subtree = tree:add(ofp_action_header_F, buffer(0,_length), "Action header")
-    subtree:add(ofp_action_header_type_F,   _type_range,   _type):append_text(" (" .. ofp_action_type[_type] .. ")")
+    local _type_F = subtree:add(ofp_action_header_type_F,   _type_range,   _type)
+    if ofp_action_type[_type] ~= nil then
+        _type_F:append_text(" (" .. ofp_action_type[_type] .. ")")
+    end
     subtree:add(ofp_action_header_length_F, _length_range, _length)
 
     if ofp_action_type[_type] == "OFPAT_OUTPUT" then
@@ -832,7 +845,6 @@ function ofp_action_header(buffer, pinfo, tree)
            ofp_action_type[_type] == "OFPAT_POP_VLAN" or
            ofp_action_type[_type] == "OFPAT_DEC_NW_TTL" or
            ofp_action_type[_type] == "OFPAT_POP_PBB" then
-        offset = 4
         local _pad_range = buffer(pointer,4)
         local _pad = tostring(_pad_range)
         subtree:add(ofp_action_header_pad_F, _pad_range, _pad)
@@ -872,6 +884,12 @@ function ofp_action_header(buffer, pinfo, tree)
 
     elseif ofp_action_type[_type] == "OFPAT_EXPERIMENTER" then
         offset = ofp_action_experimenter(buffer(pointer,buffer:len()-pointer), pinfo, subtree)
+
+    else
+        local _pad_range = buffer(pointer,buffer:len()-pointer)
+        local _pad = tostring(_pad_range)
+        subtree:add(ofp_action_header_pad_F, _pad_range, _pad)
+        offset = buffer:len()-pointer
     end
 
     pointer = pointer + offset
@@ -889,12 +907,12 @@ function ofp_action_output(buffer, pinfo, tree)
     local _pad = tostring(_pad_range)
 
     local _port_F = tree:add(ofp_action_output_port_F, _port_range, _port)
-    if not ofp_port_no[_port] == nil then
+    if ofp_port_no[_port] ~= nil then
         _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
 
     local _max_len_F = tree:add(ofp_action_output_max_len_F, _max_len_range, _max_len)
-    if not ofp_controller_max_len[_max_len] == nil then
+    if ofp_controller_max_len[_max_len] ~= nil then
         _max_len_F:append_text(" (" .. ofp_controller_max_len[_max_len] .. ")")
     end
 
@@ -1422,11 +1440,11 @@ function ofp_multipart_request(buffer, pinfo, tree)
 
     local subtree = tree:add(ofp_multipart_request_F, buffer(), ofp_multipart_types[_type])
     local _type_F = subtree:add(ofp_multipart_request_type_F, _type_range, _type)
-    if not ofp_multipart_types[_type] == nil then
+    if ofp_multipart_types[_type] ~= nil then
         _type_F:append_text(" (" .. ofp_multipart_types[_type] .. ")")
     end
     local _flags_F = subtree:add(ofp_multipart_request_flags_F, _flags_range, _flags)
-    if not ofp_multipart_request_flags[_flags] == nil then
+    if ofp_multipart_request_flags[_flags] ~= nil then
         _flags_F:append_text(" (" .. ofp_multipart_request_flags[_flags] .. ")")
     end
     subtree:add(ofp_multipart_request_pad_F, _pad_range, _pad)
@@ -1855,7 +1873,7 @@ end
 ofp_table_features_length_F         = ProtoField.uint16("of13.table_features_length",         "Length")
 ofp_table_features_table_id_F       = ProtoField.uint8 ("of13.table_features_table_id",       "Table ID")
 ofp_table_features_pad_F            = ProtoField.string("of13.table_features_pad",            "Padding")
-ofp_table_features_name_F           = ProtoField.uint64("of13.table_features_name",           "Name")
+ofp_table_features_name_F           = ProtoField.string("of13.table_features_name",           "Name")
 ofp_table_features_metadata_match_F = ProtoField.uint64("of13.table_features_metadata_match", "Metadata match")
 ofp_table_features_metadata_write_F = ProtoField.uint64("of13.table_features_metadata_write", "Metadata write")
 ofp_table_features_config_F         = ProtoField.uint32("of13.table_features_config",         "Config")
@@ -1875,7 +1893,7 @@ function ofp_table_features(buffer, pinfo, tree)
     local _length         = _length_range:uint()
     local _table_id       = _table_id_range:uint()
     local _pad            = tostring(_pad_range)
-    local _name           = tostring(_name_range)
+    local _name           = _name_range:stringz()
     local _metadata_match = _metadata_match_range:uint64()
     local _metadata_write = _metadata_write_range:uint64()
     local _config         = _config_range:uint()
@@ -1928,7 +1946,7 @@ function ofp_port_stats_request(buffer, pinfo, tree)
     local _pad  = tostring(_pad_range)
 
     local _port_F = tree:add(ofp_port_stats_request_port_F, _port_range, _port)
-    if not ofp_port_no[_port] == nil then
+    if ofp_port_no[_port] ~= nil then
         _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
     tree:add(ofp_port_stats_request_pad_F, _pad_range, _pad)
@@ -1972,7 +1990,7 @@ function ofp_port_stats(buffer, pinfo, tree)
     local _duration_nsec = _duration_nsec_range:uint()
 
     local _port_F = tree:add(ofp_port_stats_request_port_F, _port_range, _port)
-    if not ofp_port_no[_port] == nil then
+    if ofp_port_no[_port] ~= nil then
         _port_F:append_text(" (" .. ofp_port_no[_port] .. ")")
     end
     tree:add(ofp_port_stats_reply_pad_F          , _pad_range          , _pad          )
